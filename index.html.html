@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#f5f5f7" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <title>日常修图关键词完善器</title>
+  <style>
+    :root{
+      --bg:#f5f5f7;
+      --card:rgba(255,255,255,.92);
+      --ink:#1d1d1f;
+      --muted:#6e6e73;
+      --line:rgba(0,0,0,.08);
+      --blue:#0071e3;
+      --blue-soft:#e8f2ff;
+      --pink:#fcebf3;
+      --green:#eaf7ee;
+      --orange:#fff2df;
+      --purple:#f1ecff;
+      --radius-xl:30px;
+      --radius-lg:22px;
+      --radius-md:16px;
+      --shadow:0 16px 42px rgba(0,0,0,.075);
+      --shadow-soft:0 8px 24px rgba(0,0,0,.055);
+      --sans:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-serif;
+      --mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:var(--sans);
+      color:var(--ink);
+      background:radial-gradient(circle at top left,#fff 0,var(--bg) 36%,#ececef 100%);
+      min-height:100vh;
+    }
+    .nav{
+      position:sticky;top:0;z-index:30;
+      backdrop-filter:blur(22px);
+      background:rgba(245,245,247,.78);
+      border-bottom:1px solid var(--line);
+    }
+    .nav-inner{
+      max-width:1280px;margin:0 auto;padding:13px 22px;
+      display:flex;align-items:center;justify-content:space-between;gap:18px;
+    }
+    .brand{display:flex;align-items:center;gap:10px;font-weight:780;letter-spacing:-.02em}
+    .logo{
+      width:28px;height:28px;border-radius:9px;
+      background:linear-gradient(135deg,#1d1d1f,#5b5b61);
+      color:#fff;display:grid;place-items:center;font-size:15px;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.2);
+    }
+    .nav-links{display:flex;gap:18px;font-size:13px;color:var(--muted);white-space:nowrap}
+    .nav-links a{color:inherit;text-decoration:none}.nav-links a:hover{color:var(--ink)}
+    .wrap{max-width:1280px;margin:0 auto;padding:38px 22px 72px}
+    .hero{display:grid;grid-template-columns:1.15fr .85fr;gap:24px;margin-bottom:24px}
+    .card,.hero-main,.hero-side,.result-panel,.template-card,.pill-card{
+      background:var(--card);border:1px solid rgba(255,255,255,.76);border-radius:var(--radius-xl);box-shadow:var(--shadow-soft);
+    }
+    .hero-main{padding:44px;min-height:360px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
+    .hero-main:after{
+      content:"";position:absolute;width:470px;height:470px;right:-150px;bottom:-190px;border-radius:50%;
+      background:radial-gradient(circle,rgba(0,113,227,.15),rgba(255,111,183,.08) 48%,transparent 72%);
+      pointer-events:none;
+    }
+    .eyebrow{color:var(--muted);font-size:15px;font-weight:680;margin-bottom:12px}
+    h1{margin:0;font-size:clamp(40px,6vw,74px);line-height:.96;letter-spacing:-.064em;max-width:800px}
+    .hero-copy{margin:22px 0 0;max-width:690px;color:var(--muted);font-size:19px;line-height:1.58}
+    .hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px;position:relative;z-index:1}
+    .btn{
+      appearance:none;border:0;border-radius:999px;padding:12px 18px;font-weight:760;font-size:14px;cursor:pointer;
+      transition:transform .18s ease,box-shadow .18s ease,background .18s ease;font-family:var(--sans);
+    }
+    .btn:hover{transform:translateY(-1px)}
+    .btn-primary{background:var(--blue);color:#fff;box-shadow:0 8px 18px rgba(0,113,227,.25)}
+    .btn-ghost{background:#fff;color:var(--blue);border:1px solid var(--line)}
+    .btn-dark{background:#1d1d1f;color:#fff}.btn-soft{background:#f2f2f4;color:#1d1d1f}.btn-danger{background:#fff2f2;color:#b42318}
+    .hero-side{padding:26px;display:flex;flex-direction:column;gap:18px;justify-content:space-between}
+    .preview-tile{
+      height:188px;border-radius:28px;background:linear-gradient(145deg,#fff,#edf4ff);border:1px solid var(--line);
+      position:relative;overflow:hidden;display:grid;place-items:center;text-align:center;padding:20px;
+    }
+    .preview-tile:before{content:"";position:absolute;inset:auto -30px -72px auto;width:190px;height:190px;border-radius:46px;background:rgba(0,113,227,.1);transform:rotate(18deg)}
+    .preview-tile:after{content:"";position:absolute;left:-42px;top:-42px;width:130px;height:130px;border-radius:50%;background:rgba(255,111,183,.12)}
+    .preview-title{font-size:34px;font-weight:850;letter-spacing:-.04em;position:relative;z-index:1}.preview-sub{color:var(--muted);font-size:13px;margin-top:5px;position:relative;z-index:1}
+    .check-list{display:grid;gap:10px;color:var(--muted);font-size:14px;line-height:1.45}
+    .check-item{display:flex;gap:9px;padding:11px 12px;background:#f7f7f8;border-radius:16px}.check-dot{color:var(--blue);font-weight:900}
+    .section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin:36px 0 16px}.section-head h2{margin:0;font-size:30px;letter-spacing:-.045em}.section-head p{margin:6px 0 0;color:var(--muted);line-height:1.5}.small-note{color:var(--muted);font-size:13px}
+    .category-strip{display:grid;grid-template-columns:repeat(8,minmax(150px,1fr));gap:14px;overflow-x:auto;padding-bottom:5px}.category-card{min-height:130px;border-radius:24px;background:#fff;border:1px solid var(--line);padding:18px;cursor:pointer;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;position:relative;overflow:hidden}.category-card:hover{transform:translateY(-2px);box-shadow:var(--shadow)}.category-card.active{border-color:rgba(0,113,227,.55);box-shadow:0 14px 30px rgba(0,113,227,.12)}.category-card .icon{font-size:27px;margin-bottom:16px}.category-card strong{display:block;font-size:15px;letter-spacing:-.02em}.category-card span{display:block;color:var(--muted);font-size:12px;line-height:1.4;margin-top:6px}.category-card:after{content:"";position:absolute;right:-42px;bottom:-48px;width:100px;height:100px;border-radius:50%;background:var(--tint,#e8f2ff)}
+    .layout{display:grid;grid-template-columns:minmax(0,1fr) 420px;gap:24px;align-items:start}.panel{padding:24px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.field{display:flex;flex-direction:column;gap:8px}.field.full{grid-column:1/-1}label{font-size:13px;font-weight:760;color:#353538}input,select,textarea{width:100%;border:1px solid var(--line);background:#fff;border-radius:16px;padding:13px 14px;font-family:var(--sans);font-size:14px;color:var(--ink);outline:none;transition:border-color .15s ease,box-shadow .15s ease}textarea{min-height:90px;resize:vertical;line-height:1.55}input:focus,select:focus,textarea:focus{border-color:rgba(0,113,227,.55);box-shadow:0 0 0 4px rgba(0,113,227,.1)}.hint{font-size:12px;color:var(--muted);line-height:1.45}.range-row{display:flex;align-items:center;gap:12px}.range-row input{padding:0}.range-badge{min-width:46px;text-align:center;border-radius:999px;background:#f2f2f4;padding:6px 10px;font-size:12px;font-weight:780;color:#424245}
+    .chips{display:flex;flex-wrap:wrap;gap:9px}.chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:9px 12px;font-size:13px;cursor:pointer;transition:all .16s ease;user-select:none}.chip.active{background:#1d1d1f;color:#fff;border-color:#1d1d1f}.chip:hover{transform:translateY(-1px)}
+    .template-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.template-card{padding:18px;cursor:pointer;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}.template-card:hover{transform:translateY(-2px);box-shadow:var(--shadow)}.template-card.active{border-color:rgba(0,113,227,.5)}.template-card .tag{display:inline-flex;border-radius:999px;background:#f2f2f4;padding:6px 9px;color:var(--muted);font-size:12px;font-weight:760}.template-card h3{margin:14px 0 8px;font-size:18px;letter-spacing:-.03em}.template-card p{margin:0;color:var(--muted);font-size:13px;line-height:1.5}
+    .result-panel{position:sticky;top:82px;padding:22px}.result-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}.result-head h2{font-size:23px;letter-spacing:-.04em;margin:0}.quality{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12px}.quality-bar{width:78px;height:8px;background:#e5e5e7;border-radius:999px;overflow:hidden}.quality-fill{height:100%;width:0;background:var(--blue);border-radius:999px;transition:width .2s ease}.tabs{display:flex;background:#f2f2f4;border-radius:999px;padding:4px;margin-bottom:14px}.tab{flex:1;border:0;background:transparent;border-radius:999px;padding:8px 7px;font-family:var(--sans);font-weight:760;color:var(--muted);cursor:pointer}.tab.active{background:#fff;color:#1d1d1f;box-shadow:0 2px 8px rgba(0,0,0,.05)}.output{background:#111;color:#f5f5f7;border-radius:22px;padding:17px;min-height:420px;max-height:68vh;overflow:auto;white-space:pre-wrap;line-height:1.62;font-family:var(--mono);font-size:13px}.output.light{background:#fff;color:#1d1d1f;border:1px solid var(--line);font-family:var(--sans)}.result-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}.wide{grid-column:1/-1}
+    .drawer{margin-top:16px;border-radius:22px;background:#f7f7f8;border:1px solid var(--line);padding:16px}.drawer-title{font-weight:820;margin-bottom:8px}.drawer p{color:var(--muted);font-size:13px;line-height:1.55;margin:0}.drawer code{font-family:var(--mono);font-size:12px;background:#fff;border:1px solid var(--line);padding:2px 5px;border-radius:6px;color:#333}
+    .footer{margin-top:42px;color:var(--muted);font-size:13px;text-align:center}.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);opacity:0;background:#1d1d1f;color:#fff;border-radius:999px;padding:11px 16px;font-size:13px;box-shadow:var(--shadow);transition:.22s ease;z-index:99}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+    details{background:#fff;border:1px solid var(--line);border-radius:20px;padding:16px}summary{cursor:pointer;font-weight:820}.detail-body{color:var(--muted);font-size:13px;line-height:1.65;margin-top:12px}.preset-line{display:grid;gap:10px;margin-top:14px}.mini-btn{border:1px solid var(--line);background:#fff;border-radius:14px;padding:10px 12px;text-align:left;cursor:pointer;font-family:var(--sans);color:#333}.mini-btn:hover{border-color:rgba(0,113,227,.45)}
+    @media(max-width:1080px){.hero,.layout{grid-template-columns:1fr}.result-panel{position:relative;top:auto}.category-strip{grid-template-columns:repeat(4,minmax(150px,1fr))}.template-grid{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:720px){.nav-links{display:none}.wrap{padding:24px 14px 54px}.hero-main{padding:28px}.form-grid,.template-grid{grid-template-columns:1fr}.category-strip{grid-template-columns:repeat(8,150px)}h1{font-size:42px}.hero-copy{font-size:16px}.result-actions{grid-template-columns:1fr}}
+
+    /* Mobile-ready refinements for hosted links */
+    html{-webkit-text-size-adjust:100%}
+    button,input,select,textarea{-webkit-tap-highlight-color:transparent}
+    @media(max-width:860px){
+      body{background:#f5f5f7}
+      .nav{position:sticky;top:0}
+      .nav-inner{padding:10px 14px}
+      .brand{font-size:14px;min-width:0}.brand span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+      .logo{width:26px;height:26px;border-radius:8px;flex:0 0 auto}
+      .wrap{padding:18px 12px calc(92px + env(safe-area-inset-bottom))}
+      .hero{display:block;margin-bottom:18px}
+      .hero-main{min-height:auto;padding:28px 22px;border-radius:28px}
+      .hero-main:after{width:300px;height:300px;right:-140px;bottom:-150px}
+      h1{font-size:clamp(34px,11vw,48px);line-height:1.02;letter-spacing:-.055em}
+      .hero-copy{font-size:15px;line-height:1.55;margin-top:16px}
+      .hero-actions{display:grid;grid-template-columns:1fr;gap:10px;margin-top:22px}
+      .hero-actions .btn{width:100%;min-height:46px}
+      .hero-side{margin-top:12px;padding:16px;border-radius:26px;gap:12px}
+      .preview-tile{height:auto;min-height:118px;border-radius:24px}
+      .preview-title{font-size:24px}.preview-sub{font-size:12px}
+      .check-list{gap:8px}.check-item{padding:10px 11px;border-radius:15px;font-size:13px}
+      .section-head{display:block;margin:26px 0 12px}.section-head h2{font-size:25px}.small-note{display:none}
+      .category-strip{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding:2px 0 12px;-webkit-overflow-scrolling:touch}
+      .category-card{min-width:156px;min-height:122px;padding:15px;border-radius:22px;scroll-snap-align:start}
+      .category-card .icon{font-size:25px;margin-bottom:12px}.category-card span{font-size:12px}
+      .template-grid{display:flex;gap:10px;overflow-x:auto;padding:2px 0 12px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+      .template-card{min-width:238px;padding:16px;border-radius:24px;scroll-snap-align:start}
+      .template-card h3{font-size:17px}
+      .layout{display:flex;flex-direction:column;gap:14px}
+      .panel,.result-panel{padding:17px;border-radius:28px;width:100%}
+      .result-panel{position:static;top:auto}
+      .form-grid{grid-template-columns:1fr;gap:13px}
+      label{font-size:13px}
+      input,select,textarea{font-size:16px;min-height:46px;border-radius:15px;padding:12px 13px}
+      textarea{min-height:96px}
+      .chips{gap:8px}.chip{min-height:42px;display:inline-flex;align-items:center;font-size:13px;padding:9px 12px}
+      .range-row{align-items:center}.range-row input{min-height:28px}
+      .result-head{align-items:flex-start;flex-direction:column}.result-head h2{font-size:22px}
+      .tabs{border-radius:18px}.tab{min-height:38px;font-size:14px}
+      .output{min-height:300px;max-height:52vh;font-size:12.5px;line-height:1.58;border-radius:20px;padding:15px}
+      .result-actions{position:sticky;bottom:calc(10px + env(safe-area-inset-bottom));z-index:25;background:rgba(245,245,247,.86);backdrop-filter:blur(18px);border:1px solid rgba(0,0,0,.06);box-shadow:0 10px 28px rgba(0,0,0,.12);padding:10px;margin:12px -6px 0;border-radius:22px;grid-template-columns:1fr 1fr}
+      .result-actions .wide{grid-column:1/-1}.result-actions .btn{min-height:44px}
+      .drawer{border-radius:20px;padding:14px}.footer{margin-top:30px;font-size:12px;line-height:1.5}.toast{bottom:calc(88px + env(safe-area-inset-bottom));max-width:86vw;text-align:center}
+      details{border-radius:18px;padding:14px}
+    }
+    @media(max-width:380px){
+      .wrap{padding-left:10px;padding-right:10px}
+      .hero-main{padding:24px 18px}h1{font-size:32px}
+      .category-card{min-width:144px}.template-card{min-width:216px}
+      .result-actions{grid-template-columns:1fr}.result-actions .wide{grid-column:auto}
+    }
+
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <div class="brand"><div class="logo">✎</div><span>Daily Photo Prompt Builder</span></div>
+      <div class="nav-links">
+        <a href="#categories">分类</a>
+        <a href="#templates">模板</a>
+        <a href="#builder">完善关键词</a>
+        <a href="#result">生成结果</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="wrap">
+    <section class="hero">
+      <div class="hero-main">
+        <div>
+          <div class="eyebrow">日常修图关键词完善器</div>
+          <h1>把“帮我修一下”变成能落地的修图指令。</h1>
+          <p class="hero-copy">适合人物照片、生活场景、旅行街拍、房间氛围、宠物与物件图。重点不是堆形容词，而是补齐：保留什么、修改什么、风格边界、真实感、禁区和输出格式。</p>
+        </div>
+        <div class="hero-actions">
+          <button class="btn btn-primary" onclick="scrollToId('builder')">开始完善</button>
+          <button class="btn btn-ghost" onclick="applyTemplate('note')">套用“照片手账注解”</button>
+          <button class="btn btn-soft" onclick="randomIdea()">随机灵感</button>
+        </div>
+      </div>
+      <aside class="hero-side">
+        <div class="preview-tile">
+          <div>
+            <div class="preview-title">自然、干净、不油腻</div>
+            <div class="preview-sub">保留照片感，少一点塑料修图味。</div>
+          </div>
+        </div>
+        <div class="check-list">
+          <div class="check-item"><span class="check-dot">✓</span><span>不涉及小康和商业素材，完全用于日常照片修图。</span></div>
+          <div class="check-item"><span class="check-dot">✓</span><span>内置“照片手账注解”分类，可跨餐桌、旅行、房间、街景使用。</span></div>
+          <div class="check-item"><span class="check-dot">✓</span><span>支持输出完整指令、分层关键词、负面词和 JSON。</span></div>
+        </div>
+      </aside>
+    </section>
+
+    <section id="categories">
+      <div class="section-head">
+        <div>
+          <h2>选择一个修图方向</h2>
+          <p>像选产品配置一样选关键词骨架，后面再把细节填进去。</p>
+        </div>
+        <div class="small-note">当前分类：<strong id="currentCategoryName">人物自然修图</strong></div>
+      </div>
+      <div class="category-strip" id="categoryStrip"></div>
+    </section>
+
+    <section id="templates">
+      <div class="section-head">
+        <div>
+          <h2>常用模板</h2>
+          <p>你给的手绘风注解模板已归入 <strong>照片手账注解</strong>，适合更广泛的日常照片。</p>
+        </div>
+      </div>
+      <div class="template-grid" id="templateGrid"></div>
+    </section>
+
+    <section id="builder">
+      <div class="section-head">
+        <div>
+          <h2>填写你的照片信息</h2>
+          <p>不确定的地方可以空着，右侧会自动补成比较稳的修图指令。</p>
+        </div>
+        <button class="btn btn-soft" onclick="clearAll()">清空</button>
+      </div>
+
+      <div class="layout">
+        <div class="panel">
+          <div class="form-grid">
+            <div class="field">
+              <label for="photoType">照片类型</label>
+              <select id="photoType">
+                <option>人物照片</option>
+                <option>双人/多人合照</option>
+                <option>室内场景</option>
+                <option>旅行街拍</option>
+                <option>餐桌/咖啡/甜品</option>
+                <option>宠物照片</option>
+                <option>物件静物</option>
+                <option>风景照片</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="platform">使用场景</label>
+              <select id="platform">
+                <option>通用修图工具</option>
+                <option>即梦 / 豆包 / 可灵等中文图像工具</option>
+                <option>Midjourney 风格提示词</option>
+                <option>Stable Diffusion / ComfyUI</option>
+                <option>小红书/朋友圈分享</option>
+              </select>
+            </div>
+
+            <div class="field full">
+              <label for="rawIdea">原始想法</label>
+              <textarea id="rawIdea" placeholder="例：帮我把这张咖啡馆照片加上白色手绘注解；或者：把自拍修自然一点，皮肤干净但不要网红感。"></textarea>
+              <div class="hint">一句很糙的想法也可以，后面会帮你补完整。</div>
+            </div>
+
+            <div class="field">
+              <label for="keep">必须保留</label>
+              <textarea id="keep" placeholder="例：人物身份、五官特征、衣服、原始构图、真实光影、照片里的主要物件"></textarea>
+            </div>
+            <div class="field">
+              <label for="change">想要修改</label>
+              <textarea id="change" placeholder="例：提亮肤色、清理杂物、增加氛围感、加手绘白线注解、增强胶片色调"></textarea>
+            </div>
+
+            <div class="field">
+              <label for="style">目标风格</label>
+              <input id="style" placeholder="例：自然清透、日系生活感、胶片感、手账涂鸦、干净高级" />
+            </div>
+            <div class="field">
+              <label for="mood">情绪氛围</label>
+              <input id="mood" placeholder="例：轻松、温暖、松弛、可爱、安静、夏日、微醺" />
+            </div>
+
+            <div class="field">
+              <label for="light">光线</label>
+              <input id="light" placeholder="例：柔和自然光、窗边散射光、傍晚暖光、不过曝" />
+            </div>
+            <div class="field">
+              <label for="color">色彩</label>
+              <input id="color" placeholder="例：低饱和、奶油色、清透蓝绿、暖白、轻微胶片颗粒" />
+            </div>
+
+            <div class="field">
+              <label for="composition">构图要求</label>
+              <input id="composition" placeholder="例：保留原构图、主体更突出、增加留白、不要裁掉头发和手" />
+            </div>
+            <div class="field">
+              <label for="quality">画质要求</label>
+              <input id="quality" placeholder="例：高清、细节自然、轻微锐化、不过度磨皮、无 AI 塑料感" />
+            </div>
+
+            <div class="field full">
+              <label for="avoid">禁止项 / 负面词</label>
+              <textarea id="avoid" placeholder="例：不要改变人物长相，不要过度磨皮，不要大眼瘦脸，不要新增奇怪文字，不要过度装饰，不要破坏原照片真实感"></textarea>
+            </div>
+
+            <div class="field full">
+              <label>通用约束</label>
+              <div class="chips" id="constraintChips"></div>
+            </div>
+
+            <div class="field full" id="noteBlock">
+              <label>照片手账注解设置</label>
+              <div class="form-grid">
+                <div class="field">
+                  <input id="noteObjects" placeholder="照片里的物件，例如：咖啡、甜品、书、本子、窗户、猫、路牌" />
+                  <div class="hint">为空时会使用“请先观察照片中的元素”。</div>
+                </div>
+                <div class="field">
+                  <input id="noteTone" placeholder="文字语气，例如：日记感、小碎念、可爱但不油腻、轻松吐槽" />
+                </div>
+                <div class="field">
+                  <select id="noteScene">
+                    <option>通用日常照片</option>
+                    <option>餐桌/咖啡/甜品</option>
+                    <option>旅行街景</option>
+                    <option>房间/书桌/卧室</option>
+                    <option>穿搭/自拍/合照</option>
+                    <option>宠物/植物/小物件</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <select id="noteDecor">
+                    <option>适度装饰，保留空白</option>
+                    <option>装饰更少，更干净</option>
+                    <option>装饰更可爱，但不要铺满</option>
+                  </select>
+                </div>
+              </div>
+              <div class="hint">这个分类不只适合餐桌。旅行、房间、穿搭、宠物、街景都可以用，只是注解规则会按元素类型变化。</div>
+            </div>
+
+            <div class="field full">
+              <label for="strength">修图强度</label>
+              <div class="range-row">
+                <input type="range" id="strength" min="1" max="5" value="3" />
+                <span class="range-badge" id="strengthBadge">3 / 5</span>
+              </div>
+              <div class="hint">1 是轻微自然修，5 是明显风格化。日常人物建议 2 到 3，别把脸修成蜡像，拜托了主人。</div>
+            </div>
+          </div>
+
+          <div style="height:18px"></div>
+          <details open>
+            <summary>内置的“照片手账注解”通用规则</summary>
+            <div class="detail-body">
+              <p>分类名称：<strong>照片手账注解</strong></p>
+              <p>适用场景：餐桌、咖啡、甜品、旅行街景、房间书桌、自拍合照、宠物、植物、生活小物。</p>
+              <p>注解逻辑：饮品写味道/温度/心情；食物写口感/好吃程度；人物/穿搭写状态/小动作；空间写氛围/光线；宠物写表情/动作；风景写天气/颜色/记忆感；物件写质感/用途；整体补一句日记式总结。</p>
+            </div>
+          </details>
+        </div>
+
+        <aside class="result-panel" id="result">
+          <div class="result-head">
+            <h2>生成结果</h2>
+            <div class="quality"><span>完整度</span><div class="quality-bar"><div class="quality-fill" id="qualityFill"></div></div><b id="qualityText">0%</b></div>
+          </div>
+          <div class="tabs">
+            <button class="tab active" data-tab="direct">直接指令</button>
+            <button class="tab" data-tab="layers">分层词</button>
+            <button class="tab" data-tab="json">JSON</button>
+          </div>
+          <div class="output" id="outputText"></div>
+          <div class="result-actions">
+            <button class="btn btn-primary" onclick="copyOutput()">复制当前</button>
+            <button class="btn btn-ghost" onclick="copyAll()">复制全部</button>
+            <button class="btn btn-dark wide" onclick="downloadTxt()">导出 TXT</button>
+          </div>
+          <div class="drawer">
+            <div class="drawer-title">小提醒</div>
+            <p>人物照尽量写 <code>保留身份与五官</code>、<code>不过度磨皮</code>。场景照尽量写 <code>保留原空间结构</code>。手绘注解类要强调 <code>文字不要乱码</code> 和 <code>不要过度装饰</code>。</p>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <div class="footer">本文件为离线 HTML 工具。内容仅用于整理修图提示词，不上传图片，不调用任何生成服务。</div>
+  </main>
+  <div class="toast" id="toast">已复制</div>
+
+<script>
+const categories = [
+  {id:'portrait', icon:'🙂', name:'人物自然修图', desc:'自拍、合照、头像、证件感轻修', tint:'#e8f2ff'},
+  {id:'scene', icon:'🏠', name:'场景氛围增强', desc:'房间、咖啡馆、书桌、生活空间', tint:'#fff2df'},
+  {id:'note', icon:'✍️', name:'照片手账注解', desc:'白色手绘线、箭头、小碎念文字', tint:'#fcebf3'},
+  {id:'film', icon:'🎞️', name:'胶片 / CCD', desc:'复古颗粒、低饱和、生活抓拍感', tint:'#f1ecff'},
+  {id:'travel', icon:'🧳', name:'旅行街拍', desc:'城市、路牌、海边、山野、记忆感', tint:'#eaf7ee'},
+  {id:'pet', icon:'🐾', name:'宠物与小物', desc:'猫狗、玩偶、杯子、书、本子', tint:'#fff1f6'},
+  {id:'clean', icon:'🧽', name:'背景清理 / 扩图', desc:'去杂物、补背景、改比例、留白', tint:'#edf4ff'},
+  {id:'social', icon:'✨', name:'社媒氛围图', desc:'朋友圈、小红书、头像封面', tint:'#f7f7f8'}
+];
+
+const templates = {
+  portrait:{tag:'自然', title:'人物照片轻修', desc:'保留本人特征，提亮肤色，干净但不网红。', values:{photoType:'人物照片', rawIdea:'把人物照片修得更自然好看，皮肤干净，五官真实，整体更清透。', keep:'保留人物身份、五官特征、发型、服装、原始表情和真实光影', change:'轻微提亮肤色，减少皮肤瑕疵，优化暗部，提升照片清晰度', style:'自然清透、真实照片感、轻微生活方式写真', mood:'舒服、干净、松弛', light:'柔和自然光，脸部不过曝，保留真实阴影', color:'低饱和暖白，肤色自然，不偏灰不偏黄', composition:'保留原构图，不裁切头发、手和身体关键部位', quality:'高清细节，自然锐化，保留皮肤纹理', avoid:'不要改变人物长相，不要大眼瘦脸，不要过度磨皮，不要塑料皮肤，不要新增奇怪肢体和文字'}} ,
+  scene:{tag:'氛围', title:'生活场景增强', desc:'让普通照片更干净、更有生活感。', values:{photoType:'室内场景', rawIdea:'优化这张生活场景照片，让空间更干净、光线更舒服、氛围更温暖。', keep:'保留原始空间结构、主要家具、物件位置、真实透视关系', change:'清理杂乱细节，提升光线层次，增强温暖生活氛围', style:'日系生活感、自然真实、干净温暖', mood:'安静、松弛、舒服', light:'柔和窗光，轻微暖光，阴影自然', color:'奶油色、木色、低饱和、干净白色', composition:'主体更突出，适当增加留白，不改变房间布局', quality:'高清自然，细节清楚，轻微胶片颗粒', avoid:'不要改变空间结构，不要新增奇怪家具，不要过度 HDR，不要让画面像样板间'}} ,
+  note:{tag:'手账', title:'照片手账注解', desc:'你给的模板升级版，可跨不同场景使用。', values:{photoType:'餐桌/咖啡/甜品', rawIdea:'请观察照片中的元素，并为每个物件加上有意义的手绘风注解。', keep:'保留原照片构图、主体、真实光影和空白空间', change:'添加白色手绘线条、物件轮廓描边、箭头或虚线引导、短句注解和少量可爱装饰', style:'手绘风注解、日系可爱手账、白色线稿、一笔画风格', mood:'日记感、小碎念、轻松、可爱但不油腻', light:'保留原照片光线，不额外改变照片主光源', color:'以白色手绘线为主，少量浅色小装饰，整体干净', composition:'注解围绕物件分布，保留空白，不遮挡主体和人物脸部', quality:'线条清晰但自然，不要机械感，文字可读', avoid:'不要过度装饰，不要铺满画面，不要遮挡主体，不要生成乱码文字，不要改变原照片内容', noteObjects:'请先自动识别照片中的主要物件', noteTone:'日系可爱感，像自言自语的小碎念，句子简短，带一点情绪', noteScene:'通用日常照片', noteDecor:'适度装饰，保留空白'}} ,
+  film:{tag:'复古', title:'胶片 / CCD 日常感', desc:'复古但别脏，颗粒有，质感也要在。', values:{photoType:'旅行街拍', rawIdea:'把照片调成自然的胶片感/CCD感，像随手拍但很好看。', keep:'保留原照片内容、人物真实特征、场景结构和自然曝光', change:'增加轻微胶片颗粒、柔和对比、复古色偏、生活抓拍感', style:'胶片感、CCD感、低饱和、复古生活照', mood:'怀旧、松弛、随手记录感', light:'保留自然光，允许轻微闪光灯质感或柔和眩光', color:'低饱和，轻微偏暖或偏青，黑位不死黑', composition:'保留原构图，不夸张裁切', quality:'质感自然，颗粒细腻，清晰度不过度锐化', avoid:'不要过度噪点，不要脏黄，不要糊脸，不要赛博朋克，不要强烈 HDR'}} ,
+  clean:{tag:'清理', title:'背景清理 / 扩图', desc:'去杂物、补空白、改比例时更稳。', values:{photoType:'室内场景', rawIdea:'清理照片背景杂物，并保持画面自然真实。', keep:'保留主体、人物身份、原始空间透视、光线方向和主要物件', change:'去掉杂乱物品，补齐干净背景，增加适当留白', style:'自然修复、干净真实、无痕迹', mood:'简洁、舒服', light:'匹配原图光线方向和阴影', color:'匹配原图色彩，不突兀', composition:'保持主体位置，背景补全自然，不拉伸变形', quality:'修复区域纹理自然，边缘干净', avoid:'不要改变主体，不要生成重复纹理，不要拉伸背景，不要新增奇怪物体，不要破坏透视'}}
+};
+
+const constraints = [
+  '保留人物身份和五官特征', '保留原始照片真实感', '不过度磨皮', '不改变空间结构', '不新增无关物体', '文字必须清晰可读', '保留空白空间', '装饰不过量', '避免 AI 塑料感', '高清自然细节', '光影匹配原图', '颜色不过饱和'
+];
+
+let state = { category:'portrait', tab:'direct', selectedConstraints: new Set(['保留原始照片真实感','避免 AI 塑料感','高清自然细节']) };
+const ids = ['photoType','platform','rawIdea','keep','change','style','mood','light','color','composition','quality','avoid','noteObjects','noteTone','noteScene','noteDecor','strength'];
+
+function el(id){return document.getElementById(id)}
+function scrollToId(id){document.getElementById(id).scrollIntoView({behavior:'smooth', block:'start'})}
+
+function initCategories(){
+  const box = el('categoryStrip');
+  box.innerHTML = categories.map(c=>`<div class="category-card ${c.id===state.category?'active':''}" data-id="${c.id}" style="--tint:${c.tint}"><div class="icon">${c.icon}</div><strong>${c.name}</strong><span>${c.desc}</span></div>`).join('');
+  box.querySelectorAll('.category-card').forEach(card=>card.addEventListener('click',()=>setCategory(card.dataset.id)));
+  el('currentCategoryName').textContent = categories.find(c=>c.id===state.category).name;
+}
+function initTemplates(){
+  const list = ['portrait','scene','note','film','clean'];
+  el('templateGrid').innerHTML = list.map(id=>`<div class="template-card ${id===state.category?'active':''}" onclick="applyTemplate('${id}')"><span class="tag">${templates[id].tag}</span><h3>${templates[id].title}</h3><p>${templates[id].desc}</p></div>`).join('');
+}
+function initChips(){
+  const box=el('constraintChips');
+  box.innerHTML=constraints.map(c=>`<button type="button" class="chip ${state.selectedConstraints.has(c)?'active':''}" data-value="${c}">${c}</button>`).join('');
+  box.querySelectorAll('.chip').forEach(chip=>chip.addEventListener('click',()=>{
+    const v=chip.dataset.value;
+    state.selectedConstraints.has(v)?state.selectedConstraints.delete(v):state.selectedConstraints.add(v);
+    chip.classList.toggle('active');
+    update(); save();
+  }));
+}
+function setCategory(id){
+  state.category=id; initCategories(); initTemplates();
+  if(id==='note') showNote(true); else showNote(false);
+  update(); save();
+}
+function showNote(show){ el('noteBlock').style.display = show ? 'block' : 'none'; }
+function applyTemplate(id){
+  state.category=id; initCategories(); initTemplates();
+  const t=templates[id];
+  Object.entries(t.values).forEach(([k,v])=>{ if(el(k)) el(k).value=v; });
+  showNote(id==='note');
+  if(id==='note'){
+    state.selectedConstraints = new Set(['保留原始照片真实感','文字必须清晰可读','保留空白空间','装饰不过量','光影匹配原图']);
+  } else if(id==='portrait'){
+    state.selectedConstraints = new Set(['保留人物身份和五官特征','不过度磨皮','保留原始照片真实感','避免 AI 塑料感','高清自然细节']);
+  } else {
+    state.selectedConstraints = new Set(['保留原始照片真实感','不新增无关物体','避免 AI 塑料感','高清自然细节','光影匹配原图']);
+  }
+  initChips(); update(); save(); scrollToId('builder');
+}
+
+function val(id){return (el(id)?.value||'').trim()}
+function arrText(items){return items.filter(Boolean).join('；')}
+function getStrengthText(){
+  const n=Number(val('strength')||3);
+  return ['','轻微修图，只做基础优化','自然修图，变化克制','中等修图，明显更好看但保持真实','风格化修图，氛围更强','明显风格化，允许较大视觉变化'][n];
+}
+function noteRules(){
+  const objects = val('noteObjects') || '请先自动识别照片中的主要物件';
+  const tone = val('noteTone') || '日系可爱感，像自言自语的小碎念，句子简短，带一点情绪';
+  const scene = val('noteScene') || '通用日常照片';
+  const decor = val('noteDecor') || '适度装饰，保留空白';
+  return `【照片手账注解规则】
+- 先观察照片元素：${objects}
+- 适用场景：${scene}
+- 描线规则：使用像白色笔画的细线手绘线条；一笔画风格；随性、略带不均匀感；沿物件外围加描边轮廓；用箭头或虚线做视线引导。
+- 文字规则：手写风格字体；${tone}；不要长句，每条尽量 4 到 10 个字。
+- 注解生成规则：饮品写味道/温度/心情；食物写口感/好吃程度；人物或穿搭写状态/小动作；空间写氛围/光线/舒服程度；宠物写表情/动作/可爱点；风景写天气/颜色/记忆感；物件写质感/用途/小情绪；整体补一句日记式总结。
+- 装饰规则：${decor}；可加入少量热气、闪光、爱心、星星、小表情、虚线、圆圈；不要过度装饰，保留空白空间。`;
+}
+function buildDirect(){
+  const catName = categories.find(c=>c.id===state.category).name;
+  const base = [
+    `请基于上传的${val('photoType') || '照片'}进行修图，方向为「${catName}」。`,
+    val('rawIdea') ? `我的原始想法：${val('rawIdea')}` : '',
+    val('keep') ? `必须保留：${val('keep')}` : '',
+    val('change') ? `需要优化/添加：${val('change')}` : '',
+    `修图强度：${getStrengthText()}。`,
+    arrText([
+      val('style') && `目标风格：${val('style')}`,
+      val('mood') && `情绪氛围：${val('mood')}`,
+      val('light') && `光线：${val('light')}`,
+      val('color') && `色彩：${val('color')}`,
+      val('composition') && `构图：${val('composition')}`,
+      val('quality') && `画质：${val('quality')}`,
+    ]),
+    state.selectedConstraints.size ? `通用约束：${[...state.selectedConstraints].join('；')}。` : '',
+    state.category==='note' ? noteRules() : '',
+    val('avoid') ? `不要：${val('avoid')}。` : '',
+    `输出要求：保持自然真实，不要让画面看起来像过度 AI 生成；所有新增元素都要贴合原照片透视、光影和质感。`
+  ].filter(Boolean).join('\n\n');
+  return base;
+}
+function buildLayers(){
+  const positives = [
+    `照片类型：${val('photoType') || '未填写'}`,
+    `修图方向：${categories.find(c=>c.id===state.category).name}`,
+    val('style') && `风格关键词：${val('style')}`,
+    val('mood') && `氛围关键词：${val('mood')}`,
+    val('light') && `光线关键词：${val('light')}`,
+    val('color') && `色彩关键词：${val('color')}`,
+    val('composition') && `构图关键词：${val('composition')}`,
+    val('quality') && `画质关键词：${val('quality')}`,
+    state.selectedConstraints.size && `约束关键词：${[...state.selectedConstraints].join('，')}`,
+    state.category==='note' && `手账注解关键词：白色手绘线条，一笔画，随性描边，箭头，虚线，手写字体，日系可爱，小碎念，适度装饰，保留空白`
+  ].filter(Boolean).join('\n');
+  const negatives = [
+    val('avoid') || '过度磨皮、改变人物身份、五官变形、文字乱码、装饰过满、画面塑料感、过度锐化、过曝、空间透视错误、奇怪肢体、无关物体'
+  ].join('\n');
+  return `【正向关键词】\n${positives}\n\n【负面关键词】\n${negatives}\n\n【一句话压缩版】\n${compactPrompt()}`;
+}
+function compactPrompt(){
+  return [
+    `${val('photoType') || '日常照片'}修图`,
+    categories.find(c=>c.id===state.category).name,
+    val('style'), val('mood'), val('light'), val('color'), val('quality'),
+    state.category==='note' ? '白色手绘线条、手写注解、箭头虚线、日系可爱小碎念、保留空白' : '',
+    [...state.selectedConstraints].slice(0,5).join('、')
+  ].filter(Boolean).join('，');
+}
+function buildJson(){
+  const data={
+    task:'daily_photo_edit_prompt_builder',
+    category:categories.find(c=>c.id===state.category).name,
+    platform:val('platform'),
+    photo_type:val('photoType'),
+    original_idea:val('rawIdea'),
+    preserve:val('keep'),
+    edit_goals:val('change'),
+    style:val('style'),
+    mood:val('mood'),
+    lighting:val('light'),
+    color:val('color'),
+    composition:val('composition'),
+    quality:val('quality'),
+    edit_strength:Number(val('strength')||3),
+    constraints:[...state.selectedConstraints],
+    note_annotation: state.category==='note' ? {
+      scene:val('noteScene'),
+      objects:val('noteObjects'),
+      tone:val('noteTone'),
+      decoration:val('noteDecor'),
+      rules:['white hand-drawn line annotation','loose one-stroke outline','arrows or dotted visual guide','short handwritten diary-like notes','moderate decorations','keep empty space']
+    } : null,
+    negative_prompt:val('avoid')
+  };
+  return JSON.stringify(data,null,2);
+}
+function update(){
+  const tab=state.tab;
+  const out = tab==='direct' ? buildDirect() : tab==='layers' ? buildLayers() : buildJson();
+  el('outputText').textContent = out;
+  el('outputText').classList.toggle('light', tab==='json');
+  const filled = ids.filter(id=>val(id)).length + state.selectedConstraints.size;
+  const score = Math.min(100, Math.round(filled / 20 * 100));
+  el('qualityFill').style.width = score+'%';
+  el('qualityText').textContent = score+'%';
+  el('strengthBadge').textContent = `${val('strength') || 3} / 5`;
+}
+function allText(){return `【直接指令】\n${buildDirect()}\n\n\n【分层关键词】\n${buildLayers()}\n\n\n【JSON】\n${buildJson()}`}
+async function copyText(t){
+  try{ await navigator.clipboard.writeText(t); toast('已复制'); }
+  catch(e){ const ta=document.createElement('textarea'); ta.value=t; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); toast('已复制'); }
+}
+function copyOutput(){copyText(el('outputText').textContent)}
+function copyAll(){copyText(allText())}
+function downloadTxt(){
+  const blob=new Blob([allText()],{type:'text/plain;charset=utf-8'});
+  const url=URL.createObjectURL(blob); const a=document.createElement('a');
+  a.href=url; a.download='日常修图关键词.txt'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url); toast('已导出 TXT');
+}
+function toast(msg){ const t=el('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1600); }
+function clearAll(){
+  ids.forEach(id=>{ if(el(id)) el(id).value = id==='strength' ? '3' : ''; });
+  el('photoType').value='人物照片'; el('platform').value='通用修图工具';
+  state.selectedConstraints = new Set(['保留原始照片真实感','避免 AI 塑料感','高清自然细节']);
+  state.category='portrait'; initCategories(); initTemplates(); initChips(); showNote(false); update(); save(); toast('已清空');
+}
+function randomIdea(){
+  const ideas=[
+    ['note','给这张旅行街景照片加白色手绘注解，标出路牌、饮料、天空和我的小表情，像旅行日记。'],
+    ['portrait','把这张自拍修得更清透自然，肤色干净但保留皮肤纹理，不要网红脸。'],
+    ['scene','把房间照片调得更温暖，有傍晚窗光和安静生活感，清理一点杂乱物。'],
+    ['film','把这张街拍调成轻微 CCD 胶片感，颗粒自然，颜色有回忆感但不要脏。'],
+    ['clean','把背景杂物去掉，补成干净墙面，保留主体和原始光影。']
+  ];
+  const pick=ideas[Math.floor(Math.random()*ideas.length)]; applyTemplate(pick[0]); el('rawIdea').value=pick[1]; update(); save();
+}
+function save(){
+  const data={state:{category:state.category,tab:state.tab,selectedConstraints:[...state.selectedConstraints]}, values:{}};
+  ids.forEach(id=>{ if(el(id)) data.values[id]=el(id).value; });
+  localStorage.setItem('dailyPhotoPromptBuilder', JSON.stringify(data));
+}
+function load(){
+  try{
+    const raw=localStorage.getItem('dailyPhotoPromptBuilder'); if(!raw) return false;
+    const data=JSON.parse(raw); if(data.state){ state.category=data.state.category||'portrait'; state.tab=data.state.tab||'direct'; state.selectedConstraints=new Set(data.state.selectedConstraints||[]); }
+    if(data.values){ Object.entries(data.values).forEach(([k,v])=>{ if(el(k)) el(k).value=v; }); }
+    return true;
+  }catch(e){return false;}
+}
+
+function applyUrlState(){
+  const params = new URLSearchParams(location.search);
+  const category = params.get('category');
+  const template = params.get('template');
+  const tab = params.get('tab');
+  if(category && categories.some(c=>c.id===category)) selectCategory(category);
+  if(template && templates[template]) applyTemplate(template);
+  if(tab && ['direct','layers','json'].includes(tab)){
+    state.tab = tab;
+    document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t.dataset.tab===tab));
+    update(); save();
+  }
+  if(location.hash){
+    const target = document.querySelector(location.hash);
+    if(target) setTimeout(()=>target.scrollIntoView({behavior:'smooth',block:'start'}), 180);
+  }
+}
+
+function bind(){
+  ids.forEach(id=>{ if(el(id)) el(id).addEventListener('input',()=>{update();save();}); });
+  document.querySelectorAll('.tab').forEach(tab=>tab.addEventListener('click',()=>{
+    state.tab=tab.dataset.tab; document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); tab.classList.add('active'); update(); save();
+  }));
+}
+(function(){
+  const restored=load();
+  initCategories(); initTemplates(); initChips(); bind();
+  showNote(state.category==='note');
+  if(!restored) applyTemplate('portrait');
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===state.tab));
+  applyUrlState();
+  update();
+})();
+</script>
+</body>
+</html>
