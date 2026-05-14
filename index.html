@@ -70,7 +70,7 @@
     .eyebrow{color:var(--muted);font-size:15px;font-weight:680;margin-bottom:12px}
     h1{margin:0;font-size:clamp(40px,6vw,74px);line-height:.96;letter-spacing:-.064em;max-width:800px}
     .hero-copy{margin:22px 0 0;max-width:690px;color:var(--muted);font-size:19px;line-height:1.58}
-    .hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px;position:relative;z-index:1}
+    .hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px;position:relative;z-index:1}.idea-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}.idea-actions .btn{padding:10px 14px;border-radius:999px;font-size:13px}
     .btn{
       appearance:none;border:0;border-radius:999px;padding:12px 18px;font-weight:760;font-size:14px;cursor:pointer;
       transition:transform .18s ease,box-shadow .18s ease,background .18s ease;font-family:var(--sans);
@@ -193,6 +193,7 @@
           <div class="check-item"><span class="check-dot">✓</span><span>不涉及小康和商业素材，完全用于日常照片修图。</span></div>
           <div class="check-item"><span class="check-dot">✓</span><span>内置“照片手账注解”分类，可跨餐桌、旅行、房间、街景使用。</span></div>
           <div class="check-item"><span class="check-dot">✓</span><span>支持输出完整指令、分层关键词、负面词和 JSON。</span></div>
+          <div class="check-item"><span class="check-dot">✓</span><span>新增“原始想法自动拆解”，一句话也能填充到对应栏目。</span></div>
           <div class="check-item"><span class="check-dot">✓</span><span>所有生成结果默认加入：底部额外预留不少于 240px 的纯白色范围，或约占画面高度 12% 的底部安全留白区。</span></div>
         </div>
       </aside>
@@ -258,7 +259,11 @@
             <div class="field full">
               <label for="rawIdea">原始想法</label>
               <textarea id="rawIdea" placeholder="例：帮我把这张咖啡馆照片加上白色手绘注解；或者：把自拍修自然一点，皮肤干净但不要网红感。"></textarea>
-              <div class="hint">一句很糙的想法也可以，后面会帮你补完整。</div>
+              <div class="hint">一句很糙的想法也可以，点击下方按钮会自动拆解到对应填空项，之后你仍然可以手动补充。</div>
+              <div class="idea-actions">
+                <button type="button" class="btn btn-primary" onclick="autoFillFromIdea(true)">智能拆解并覆盖填充</button>
+                <button type="button" class="btn btn-soft" onclick="autoFillFromIdea(false)">只补空项</button>
+              </div>
             </div>
 
             <div class="field">
@@ -459,6 +464,144 @@ function applyTemplate(id){
   initChips(); update(); save(); scrollToId('builder');
 }
 
+function hasAny(text, words){ return words.some(w=>text.includes(w)); }
+function smartJoin(items){ return [...new Set(items.filter(Boolean).map(x=>x.trim()).filter(Boolean))].join('，'); }
+function put(id, value, overwrite){
+  if(!el(id) || !value) return;
+  if(overwrite || !val(id)) el(id).value = value;
+}
+function setSelectValue(id, value){
+  if(!el(id) || !value) return;
+  const options=[...el(id).options];
+  const match=options.find(o=>o.value===value || o.textContent===value);
+  if(match) el(id).value=match.value;
+}
+function detectCategory(idea){
+  const s=idea.toLowerCase();
+  if(hasAny(s,['手绘','注解','箭头','虚线','手账','小碎念','白色线条','描边','涂鸦','doodle'])) return 'note';
+  if(hasAny(s,['清理','去掉','去除','擦除','扩图','补背景','留白','白边','墙面','杂物'])) return 'clean';
+  if(hasAny(s,['胶片','ccd','复古','颗粒','拍立得','老照片','怀旧','film'])) return 'film';
+  if(hasAny(s,['自拍','人像','人物','脸','皮肤','五官','合照','穿搭','证件照','半身','全身'])) return 'portrait';
+  if(hasAny(s,['猫','狗','宠物','兔','玩偶','杯子','书','花','植物','小物','静物'])) return 'pet';
+  if(hasAny(s,['旅行','街拍','海边','山','天空','城市','路牌','夜景','风景','公园','街道'])) return 'travel';
+  if(hasAny(s,['小红书','朋友圈','头像','封面','社媒'])) return 'social';
+  if(hasAny(s,['房间','卧室','客厅','咖啡馆','餐厅','书桌','室内','空间','桌面','餐桌'])) return 'scene';
+  return state.category || 'portrait';
+}
+function detectPhotoType(idea, category){
+  const s=idea.toLowerCase();
+  if(hasAny(s,['合照','双人','多人'])) return '双人/多人合照';
+  if(hasAny(s,['自拍','人像','人物','脸','皮肤','五官','穿搭'])) return '人物照片';
+  if(hasAny(s,['猫','狗','宠物','兔'])) return '宠物照片';
+  if(hasAny(s,['杯子','书','花','植物','玩偶','小物','静物'])) return '物件静物';
+  if(hasAny(s,['餐桌','咖啡','甜品','饮料','披萨','奶茶','饭','食物'])) return '餐桌/咖啡/甜品';
+  if(hasAny(s,['旅行','街拍','街道','城市','路牌'])) return '旅行街拍';
+  if(hasAny(s,['海边','山','天空','风景','公园','草地'])) return '风景照片';
+  if(hasAny(s,['房间','卧室','客厅','书桌','室内','咖啡馆','餐厅'])) return '室内场景';
+  const map={portrait:'人物照片',scene:'室内场景',note:'餐桌/咖啡/甜品',film:'旅行街拍',travel:'旅行街拍',pet:'宠物照片',clean:'室内场景',social:'人物照片'};
+  return map[category] || '人物照片';
+}
+function detectPlatform(idea){
+  const s=idea.toLowerCase();
+  if(hasAny(s,['豆包','即梦','可灵','通义','中文图像'])) return '即梦 / 豆包 / 可灵等中文图像工具';
+  if(hasAny(s,['midjourney','mj'])) return 'Midjourney 风格提示词';
+  if(hasAny(s,['stable diffusion','comfyui','sd'])) return 'Stable Diffusion / ComfyUI';
+  if(hasAny(s,['小红书','朋友圈'])) return '小红书/朋友圈分享';
+  return val('platform') || '通用修图工具';
+}
+function keywordsFromIdea(idea, dict){
+  const s=idea.toLowerCase();
+  return dict.filter(item=>item.keys.some(k=>s.includes(k))).map(item=>item.value);
+}
+function autoFillValues(idea, category){
+  const style = keywordsFromIdea(idea, [
+    {keys:['自然','真实','清透'], value:'自然清透、真实照片感'},
+    {keys:['日系','生活感'], value:'日系生活感'},
+    {keys:['胶片','film','ccd','复古','拍立得'], value:'胶片感、CCD感、复古生活照、轻微颗粒'},
+    {keys:['手绘','手账','注解','涂鸦','doodle'], value:'手绘风注解、日系可爱手账、白色线稿、一笔画风格'},
+    {keys:['高级','干净'], value:'干净高级、简洁留白'},
+    {keys:['电影','电影感'], value:'电影感、柔和对比'},
+    {keys:['可爱','萌','少女'], value:'可爱、轻松、日记感'}
+  ]);
+  const mood = keywordsFromIdea(idea, [
+    {keys:['温暖','暖'], value:'温暖'},
+    {keys:['松弛','放松','舒服'], value:'松弛、舒服'},
+    {keys:['可爱','小碎念'], value:'可爱、日记感'},
+    {keys:['安静','治愈'], value:'安静、治愈'},
+    {keys:['夏日','海边'], value:'夏日、清爽'},
+    {keys:['怀旧','复古','ccd','胶片'], value:'怀旧、随手记录感'}
+  ]);
+  const light = keywordsFromIdea(idea, [
+    {keys:['窗光','窗边'], value:'柔和窗边散射光'},
+    {keys:['自然光'], value:'柔和自然光'},
+    {keys:['傍晚','夕阳','黄昏'], value:'傍晚暖光，阴影自然'},
+    {keys:['夜景','晚上'], value:'夜景环境光，亮部不过曝'},
+    {keys:['闪光灯','ccd'], value:'允许轻微闪光灯质感，但不要死白'},
+    {keys:['提亮','暗部'], value:'适度提亮暗部，保留真实阴影'}
+  ]);
+  const color = keywordsFromIdea(idea, [
+    {keys:['低饱和'], value:'低饱和、颜色克制'},
+    {keys:['奶油','暖白'], value:'奶油色、暖白、柔和肤色'},
+    {keys:['蓝','清爽','海边'], value:'清透蓝绿、干净明亮'},
+    {keys:['胶片','ccd','复古'], value:'低饱和，轻微偏暖或偏青，黑位不死黑'},
+    {keys:['粉','可爱','少女'], value:'浅粉、浅蓝、柔和浅色点缀'}
+  ]);
+  const composition = keywordsFromIdea(idea, [
+    {keys:['留白','文字','排版'], value:'增加适当留白，主体不要进入底部安全留白区'},
+    {keys:['不裁','不要裁','保留构图'], value:'保留原构图，不裁切头发、手和主体关键部位'},
+    {keys:['竖图','9:16'], value:'适配9:16竖图，主体居中偏上，底部保留安全区'},
+    {keys:['方图','1:1'], value:'适配1:1方图，主体清晰，边缘留白'},
+    {keys:['突出主体','主体更突出'], value:'主体更突出，背景简洁不抢戏'},
+    {keys:['手绘','注解','箭头'], value:'注解围绕物件分布，保留空白，不遮挡主体和人物脸部'}
+  ]);
+  const common = {
+    portrait:{keep:'保留人物身份、五官特征、发型、服装、原始表情、真实光影和照片感',change:'根据原始想法进行自然优化；轻微提亮肤色，减少瑕疵，优化暗部，提升照片清晰度',style:'自然清透、真实照片感、轻微生活方式写真',mood:'舒服、干净、松弛',light:'柔和自然光，脸部不过曝，保留真实阴影',color:'低饱和暖白，肤色自然，不偏灰不偏黄',composition:'保留原构图，不裁切头发、手和身体关键部位',quality:'高清细节，自然锐化，保留皮肤纹理',avoid:'不要改变人物长相，不要大眼瘦脸，不要过度磨皮，不要塑料皮肤，不要新增奇怪肢体和乱码文字'},
+    note:{keep:'保留原照片构图、主体、真实光影、空白空间和主要物件',change:'根据原始想法添加白色手绘线条、物件轮廓描边、箭头或虚线引导、短句注解和少量可爱装饰',style:'手绘风注解、日系可爱手账、白色线稿、一笔画风格',mood:'日记感、小碎念、轻松、可爱但不油腻',light:'保留原照片光线，不额外改变照片主光源',color:'以白色手绘线为主，少量浅色小装饰，整体干净',composition:'注解围绕物件分布，保留空白，不遮挡主体和人物脸部',quality:'线条清晰但自然，不要机械感，文字可读',avoid:'不要过度装饰，不要铺满画面，不要遮挡主体，不要生成乱码文字，不要改变原照片内容'},
+    film:{keep:'保留原照片内容、人物真实特征、场景结构和自然曝光',change:'根据原始想法增加轻微胶片颗粒、柔和对比、复古色偏、生活抓拍感',style:'胶片感、CCD感、低饱和、复古生活照',mood:'怀旧、松弛、随手记录感',light:'保留自然光，允许轻微闪光灯质感或柔和眩光',color:'低饱和，轻微偏暖或偏青，黑位不死黑',composition:'保留原构图，不夸张裁切',quality:'质感自然，颗粒细腻，清晰度不过度锐化',avoid:'不要过度噪点，不要脏黄，不要糊脸，不要赛博朋克，不要强烈 HDR'},
+    clean:{keep:'保留主体、人物身份、原始空间透视、光线方向和主要物件',change:'根据原始想法清理杂乱物品，补齐干净背景，增加适当留白',style:'自然修复、干净真实、无痕迹',mood:'简洁、舒服',light:'匹配原图光线方向和阴影',color:'匹配原图色彩，不突兀',composition:'保持主体位置，背景补全自然，不拉伸变形',quality:'修复区域纹理自然，边缘干净',avoid:'不要改变主体，不要生成重复纹理，不要拉伸背景，不要新增奇怪物体，不要破坏透视'},
+    scene:{keep:'保留原始空间结构、主要家具、物件位置、真实透视关系和生活痕迹',change:'根据原始想法清理杂乱细节，提升光线层次，增强生活氛围',style:'日系生活感、自然真实、干净温暖',mood:'安静、松弛、舒服',light:'柔和窗光，轻微暖光，阴影自然',color:'奶油色、木色、低饱和、干净白色',composition:'主体更突出，适当增加留白，不改变房间布局',quality:'高清自然，细节清楚，轻微胶片颗粒',avoid:'不要改变空间结构，不要新增奇怪家具，不要过度 HDR，不要让画面像样板间'},
+    travel:{keep:'保留旅行场景、人物或主体位置、城市/自然环境特征、真实光线和透视',change:'根据原始想法增强旅行记忆感，优化天空、街景、色彩和画面层次',style:'旅行街拍、自然生活感、清爽干净、轻微胶片感',mood:'自由、松弛、夏日、记忆感',light:'自然环境光，亮部不过曝，阴影保留层次',color:'清透、低饱和、天空和环境色自然',composition:'保留原构图，主体更突出，边缘不要变形',quality:'高清自然，纹理真实，远景不要糊成一片',avoid:'不要过度换天，不要假 HDR，不要改变地标和人物特征，不要新增奇怪路人'},
+    pet:{keep:'保留宠物或物件的真实外形、表情、毛发/材质细节、原始光影',change:'根据原始想法优化主体清晰度、背景干净度和可爱氛围',style:'自然可爱、生活随拍、干净柔和',mood:'可爱、轻松、治愈',light:'柔和自然光，毛发和材质保留层次',color:'柔和浅色、低饱和、主体颜色准确',composition:'主体清晰，背景不抢戏，保留适当留白',quality:'高清细节，毛发/材质自然，不要糊边',avoid:'不要改变宠物品种和表情，不要生成多余肢体，不要过度锐化，不要塑料质感'},
+    social:{keep:'保留原照片主体、人物特征、真实光影和主要画面关系',change:'根据原始想法增强社媒氛围，让画面更干净、更有分享感',style:'小红书/朋友圈氛围图、干净自然、轻微高级感',mood:'轻松、好看、日常记录感',light:'柔和自然光，画面通透不过曝',color:'干净明亮、低饱和、肤色和环境色自然',composition:'主体突出，适当留白，适合封面或分享',quality:'高清自然，细节清楚，少一点AI味',avoid:'不要过度滤镜，不要网红脸，不要文字乱码，不要装饰过满'}
+  };
+  const d = common[category] || common.portrait;
+  return {
+    keep: d.keep,
+    change: d.change,
+    style: smartJoin([d.style, ...style]),
+    mood: smartJoin([d.mood, ...mood]),
+    light: smartJoin([d.light, ...light]),
+    color: smartJoin([d.color, ...color]),
+    composition: smartJoin([d.composition, ...composition]),
+    quality: d.quality,
+    avoid: d.avoid,
+    noteObjects: category==='note' ? (hasAny(idea.toLowerCase(),['人物','穿搭','自拍','合照']) ? '请先自动识别照片中的人物、穿搭、动作和周围主要物件' : '请先自动识别照片中的主要物件、空间元素和可注解的小细节') : '',
+    noteTone: category==='note' ? '日系可爱感，像自言自语的小碎念，句子简短，带一点情绪' : '',
+    noteScene: category==='note' ? detectPhotoType(idea, category) : '',
+    noteDecor: category==='note' ? '适度加入热气、闪光、爱心、星星、小表情、虚线和圆圈；不要过度装饰，保留空白' : ''
+  };
+}
+function autoFillFromIdea(overwrite=true){
+  const idea=val('rawIdea');
+  if(!idea){ toast('先写一句原始想法'); return; }
+  const category=detectCategory(idea);
+  state.category=category;
+  initCategories(); initTemplates(); showNote(category==='note');
+  setSelectValue('photoType', detectPhotoType(idea, category));
+  setSelectValue('platform', detectPlatform(idea));
+  const values=autoFillValues(idea, category);
+  Object.entries(values).forEach(([id,value])=>put(id,value,overwrite));
+  if(category==='note'){
+    state.selectedConstraints = new Set(['保留原始照片真实感','文字必须清晰可读','保留空白空间','装饰不过量','光影匹配原图']);
+  } else if(category==='portrait'){
+    state.selectedConstraints = new Set(['保留人物身份和五官特征','不过度磨皮','保留原始照片真实感','避免 AI 塑料感','高清自然细节']);
+  } else {
+    state.selectedConstraints = new Set(['保留原始照片真实感','不新增无关物体','避免 AI 塑料感','高清自然细节','光影匹配原图']);
+  }
+  initChips(); update(); save();
+  toast(overwrite ? '已根据原始想法覆盖填充' : '已根据原始想法补齐空项');
+}
+
 function val(id){return (el(id)?.value||'').trim()}
 function arrText(items){return items.filter(Boolean).join('；')}
 function getStrengthText(){
@@ -619,7 +762,7 @@ function applyUrlState(){
   const category = params.get('category');
   const template = params.get('template');
   const tab = params.get('tab');
-  if(category && categories.some(c=>c.id===category)) selectCategory(category);
+  if(category && categories.some(c=>c.id===category)) setCategory(category);
   if(template && templates[template]) applyTemplate(template);
   if(tab && ['direct','layers','json'].includes(tab)){
     state.tab = tab;
