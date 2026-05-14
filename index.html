@@ -193,7 +193,7 @@
           <div class="check-item"><span class="check-dot">✓</span><span>不涉及小康和商业素材，完全用于日常照片修图。</span></div>
           <div class="check-item"><span class="check-dot">✓</span><span>内置“照片手账注解”分类，可跨餐桌、旅行、房间、街景使用。</span></div>
           <div class="check-item"><span class="check-dot">✓</span><span>支持输出完整指令、分层关键词、负面词和 JSON。</span></div>
-          <div class="check-item"><span class="check-dot">✓</span><span>所有生成结果默认加入：底部额外预留 100px 纯白色范围。</span></div>
+          <div class="check-item"><span class="check-dot">✓</span><span>所有生成结果默认加入：底部额外预留不少于 240px 的纯白色范围，或约占画面高度 12% 的底部安全留白区。</span></div>
         </div>
       </aside>
     </section>
@@ -413,7 +413,7 @@ const constraints = [
 
 let state = { category:'portrait', tab:'direct', selectedConstraints: new Set(['保留原始照片真实感','避免 AI 塑料感','高清自然细节']) };
 const ids = ['photoType','platform','rawIdea','keep','change','style','mood','light','color','composition','quality','avoid','noteObjects','noteTone','noteScene','noteDecor','strength'];
-const bottomWhiteSpaceRule = '生成的每张图底部都额外多留出 100px 的纯白色范围，用作后期放文字或排版；不要在这一区域放主体、注解、装饰元素或杂乱背景。';
+const bottomWhiteSpaceRule = '生成的每张图底部都额外多留出不少于 240px 的纯白色范围，或约占画面高度 12% 的底部安全留白区，用作后期放文字、排版或避免重要内容被底部平台信息遮挡；不要在这一区域放主体、注解、装饰元素或杂乱背景。';
 
 function el(id){return document.getElementById(id)}
 function scrollToId(id){document.getElementById(id).scrollIntoView({behavior:'smooth', block:'start'})}
@@ -512,7 +512,7 @@ function buildLayers(){
     val('color') && `色彩关键词：${val('color')}`,
     val('composition') && `构图关键词：${val('composition')}`,
     val('quality') && `画质关键词：${val('quality')}`,
-    `固定版式关键词：底部额外预留 100px 纯白色范围，底部白边，后期文字区，主体与装饰不要进入底部留白`,
+    `固定版式关键词：底部额外预留不少于240px纯白色范围，或约占画面高度12%的底部安全留白区，底部白边，后期文字区，避免重要内容被底部平台信息遮挡，主体与装饰不要进入底部留白`,
     state.selectedConstraints.size && `约束关键词：${[...state.selectedConstraints].join('，')}`,
     state.category==='note' && `手账注解关键词：白色手绘线条，一笔画，随性描边，箭头，虚线，手写字体，日系可爱，小碎念，适度装饰，保留空白`
   ].filter(Boolean).join('\n');
@@ -526,7 +526,7 @@ function compactPrompt(){
     `${val('photoType') || '日常照片'}修图`,
     categories.find(c=>c.id===state.category).name,
     val('style'), val('mood'), val('light'), val('color'), val('quality'),
-    '底部额外预留100px纯白色范围，作为后期文字区',
+    '底部额外预留不少于240px纯白色范围，或约占画面高度12%的底部安全留白区，作为后期文字区并避免重要内容被底部平台信息遮挡',
     state.category==='note' ? '白色手绘线条、手写注解、箭头虚线、日系可爱小碎念、保留空白' : '',
     [...state.selectedConstraints].slice(0,5).join('、')
   ].filter(Boolean).join('，');
