@@ -1,0 +1,501 @@
+# 项目升级需求：日常修图关键词完善器 Web App
+
+## 1. 项目目标
+
+将现有的单文件 HTML「日常修图关键词完善器」升级为一个可维护的 Web App。
+
+用户输入一句粗略想法后，系统可以：
+
+1. 通过离线规则自动拆解字段；
+2. 可选通过 AI 模型进一步理解和补全字段；
+3. 生成可复制的：
+   - 完整提示词
+   - 关键词分层
+   - 一句话压缩版
+   - JSON 结构化提示词
+
+项目用途是日常修图、生图、照片风格化提示词整理，不是生图工具，不上传和处理真实图片。
+
+## 2. 技术栈
+
+- Next.js App Router
+- TypeScript
+- Tailwind CSS
+- shadcn/ui
+- Vercel 部署
+- Next.js Route Handler 做后端 API
+- API Key 通过环境变量保存
+- API Key 禁止出现在前端代码里
+
+Next.js App Router 的 Route Handler 可通过 `app/**/route.ts` 创建自定义请求处理逻辑，适合做 `/api/*` 后端接口。:contentReference[oaicite:0]{index=0}  
+环境变量方面，Next.js 中非 `NEXT_PUBLIC_` 的变量默认只在服务端可用；如果加了 `NEXT_PUBLIC_` 前缀，值会被打进前端 bundle，所以 AI API Key 不能使用 `NEXT_PUBLIC_`。:contentReference[oaicite:1]{index=1}  
+Vercel 支持在项目环境变量里保存敏感 token，并在构建或函数运行时读取。:contentReference[oaicite:2]{index=2}
+
+## 3. 项目初始化要求
+
+使用 Next.js App Router + TypeScript + Tailwind CSS 初始化项目。
+
+推荐命令：
+
+```bash
+pnpm create next-app@latest photo-prompt-builder
+
+TypeScript: Yes
+Tailwind CSS: Yes
+App Router: Yes
+src directory: Yes 或 No 均可，但项目内保持一致
+Import alias: @/*
+
+pnpm dlx shadcn@latest init
+
+pnpm dlx shadcn@latest add button card textarea input tabs badge separator switch select checkbox dialog toast
+
+photo-prompt-builder/
+├─ app/
+│  ├─ api/
+│  │  ├─ analyze/
+│  │  │  └─ route.ts
+│  │  └─ generate/
+│  │     └─ route.ts
+│  ├─ globals.css
+│  ├─ layout.tsx
+│  └─ page.tsx
+├─ components/
+│  ├─ builder/
+│  │  ├─ CategoryCards.tsx
+│  │  ├─ IdeaInput.tsx
+│  │  ├─ PromptForm.tsx
+│  │  ├─ ResultTabs.tsx
+│  │  ├─ Toolbar.tsx
+│  │  └─ ModeSwitch.tsx
+│  └─ ui/
+├─ lib/
+│  ├─ constants.ts
+│  ├─ offline-rules.ts
+│  ├─ prompt-builder.ts
+│  ├─ schemas.ts
+│  ├─ storage.ts
+│  └─ ai.ts
+├─ types/
+│  └─ prompt.ts
+├─ .env.example
+├─ package.json
+└─ README.md
+
+5. 页面设计要求
+
+整体风格参考 Apple Store 的浅色产品页气质：
+
+浅灰背景
+白色大圆角卡片
+大留白
+柔和阴影
+简洁按钮
+卡片式分类选择
+移动端优先适配
+页面像一个轻量工具，不要像复杂后台
+
+不要使用 Apple Logo、Apple 图片或官方素材。
+
+6. 页面模块
+6.1 顶部区域
+
+包含：
+
+产品名：日常修图关键词完善器
+简短说明：输入一句想法，自动拆解成可复制的修图提示词
+模式开关：
+离线规则模式
+AI 增强模式
+
+如果没有配置 API Key，AI 增强模式应禁用或提示用户当前只能使用离线规则。
+
+6.2 原始想法输入区
+
+字段：
+
+rawIdea: string
+
+示例 placeholder：
+
+例如：把这张咖啡店照片做成日系手账注解风，保留原图氛围，底部留白方便放文字
+
+按钮：
+
+智能拆解并覆盖填充
+只补空项
+清空
+恢复默认
+6.3 分类选择区
+
+分类至少包含：
+
+type Category =
+  | "portrait"
+  | "lifestyle"
+  | "film"
+  | "note"
+  | "travel"
+  | "pet_object"
+  | "cleanup"
+  | "general";
+
+对应中文名：
+
+人物照片轻修
+生活场景增强
+胶片 / CCD / 氛围感
+照片手账注解
+风景旅行
+宠物 / 小物件
+背景清理 / 去杂物
+通用修图增强
+
+点击分类后，更新推荐字段，但不能误删用户已经手动输入的内容。
+
+6.4 表单字段区
+
+基础信息：
+
+photoType: string
+usageScene: string
+keep: string
+edit: string
+
+画面方向：
+
+subject: string
+scene: string
+actionRelation: string
+mood: string
+composition: string
+aspectRatio: string
+
+视觉风格：
+
+targetStyle: string
+lighting: string
+color: string
+texture: string
+quality: string
+retouchStrength: string
+
+手账注解专用：
+
+annotationObjects: string
+annotationTextStyle: string
+lineStyle: string
+decorations: string
+blankSpaceRule: string
+
+禁止项：
+
+negativePrompt: string
+
+固定规则：
+
+bottomSafeArea: string
+
+固定值必须为：
+
+生成的每张图底部都额外多留出不少于 240px 的纯白色范围，或约占画面高度 12% 的底部安全留白区，用作后期放文字、排版或避免重要内容被底部平台信息遮挡；不要在这一区域放主体、注解、装饰元素或杂乱背景。
+7. 输出结果
+
+输出区域使用 Tabs，至少包含：
+
+7.1 完整提示词
+
+结构：
+
+修图目标：
+保留内容：
+修改方向：
+主体与场景：
+风格要求：
+光线与色彩：
+构图与画质：
+手账注解规则：
+底部安全留白：
+禁止项：
+7.2 分层关键词
+
+结构：
+
+主体：
+场景：
+动作 / 关系：
+氛围：
+光线：
+色彩：
+质感：
+构图：
+画质：
+手账注解：
+底部安全留白：
+负面词：
+7.3 一句话压缩版
+
+适合输入框较短的平台。
+
+7.4 JSON 结构化提示词
+
+输出格式：
+
+{
+  "photo_type": "",
+  "task": "",
+  "keep": "",
+  "edit": "",
+  "subject": "",
+  "scene": "",
+  "style": "",
+  "lighting": "",
+  "color": "",
+  "composition": "",
+  "quality": "",
+  "bottom_safe_area": "",
+  "negative_prompt": ""
+}
+8. 离线规则模式
+
+在 lib/offline-rules.ts 实现。
+
+输入：
+
+rawIdea: string
+currentForm: PromptFormState
+mode: "overwrite" | "fill-empty"
+
+输出：
+
+Partial<PromptFormState>
+
+规则要求：
+
+8.1 人物照片识别
+
+命中关键词：
+
+自拍、人像、人物、合照、脸、皮肤、妆容、穿搭、证件照、写真
+
+自动填充：
+
+分类：人物照片轻修
+修图强度：自然轻修
+光线：柔和自然光
+画质：清晰、自然、真实
+禁止项：不要改变五官、不要过度磨皮、不要改变人物身份
+8.2 手账注解识别
+
+命中关键词：
+
+手账、注解、涂鸦、标注、箭头、小字、日系、可爱、白色线条
+
+自动填充：
+
+分类：照片手账注解
+线条：白色细线、一笔画、随性不均匀
+文字：日系可爱手写风、小碎念
+装饰：爱心、星星、闪光、小表情
+禁止项：不要过度装饰、不要文字乱码
+8.3 胶片 / CCD 识别
+
+命中关键词：
+
+胶片、CCD、复古、日杂、怀旧、颗粒、低饱和、闪光灯
+
+自动填充：
+
+分类：胶片 / CCD / 氛围感
+色彩：低饱和、轻微偏暖或偏青
+质感：胶片颗粒、轻微噪点
+光线：自然光或闪光灯直闪
+禁止项：不要塑料感、不要过度锐化
+8.4 旅行风景识别
+
+命中关键词：
+
+旅行、街景、风景、海边、天空、城市、山、树、日落、咖啡店
+
+自动填充：
+
+分类：风景旅行或生活场景增强
+氛围：轻松、自然、记忆感
+光线：晴天自然光、傍晚暖光
+构图：保留原始空间关系，增强层次
+8.5 宠物 / 小物件识别
+
+命中关键词：
+
+猫、狗、宠物、小物、玩偶、杯子、花、书、桌面
+
+自动填充：
+
+分类：宠物 / 小物件
+氛围：可爱、生活感
+质感：真实、柔和
+禁止项：不要改变主体形态，不要多生成肢体或物件
+9. AI 增强模式
+9.1 API 路由
+
+创建：
+
+app/api/analyze/route.ts
+
+功能：
+
+接收 rawIdea
+接收当前表单状态
+接收模式：overwrite 或 fill-empty
+调用 AI 模型进行字段拆解
+返回结构化字段
+
+请求体：
+
+{
+  rawIdea: string;
+  currentForm: PromptFormState;
+  mode: "overwrite" | "fill-empty";
+}
+
+返回：
+
+{
+  ok: boolean;
+  data?: Partial<PromptFormState>;
+  error?: string;
+}
+9.2 API Key 安全要求
+API Key 存在服务端环境变量，例如：
+OPENAI_API_KEY=
+不允许使用：
+NEXT_PUBLIC_OPENAI_API_KEY
+不允许在前端组件中直接读取 API Key。
+前端只能请求 /api/analyze。
+app/api/analyze/route.ts 在服务端读取：
+process.env.OPENAI_API_KEY
+
+Next.js 非 NEXT_PUBLIC_ 环境变量默认只在服务端可用，所以这类 Key 应只在 Route Handler 中读取。
+
+9.3 AI 调用失败处理
+
+如果：
+
+API Key 未配置
+请求失败
+返回格式不合法
+模型超时
+
+则自动降级到离线规则模式，并给出 toast 提示：
+
+AI 增强暂不可用，已使用离线规则拆解。
+10. 生成提示词逻辑
+
+在 lib/prompt-builder.ts 实现纯函数：
+
+export function buildFullPrompt(form: PromptFormState): string
+export function buildLayeredKeywords(form: PromptFormState): string
+export function buildCompactPrompt(form: PromptFormState): string
+export function buildJsonPrompt(form: PromptFormState): string
+
+所有输出必须包含底部安全留白规则。
+
+11. 状态管理
+
+可以使用 React useState + useEffect。
+
+不需要引入 Zustand，除非代码复杂度明显上升。
+
+需要 localStorage 保存：
+
+{
+  formState: PromptFormState;
+  selectedCategory: Category;
+  mode: "offline" | "ai";
+}
+
+页面刷新后恢复。
+
+12. 复制与导出
+
+实现：
+
+复制当前 tab 内容
+复制全部结果
+导出 .txt
+
+导出的 txt 包含：
+
+完整提示词
+关键词分层
+一句话压缩版
+JSON 结构化提示词
+13. 移动端适配
+
+要求：
+
+手机端单列布局
+分类卡片可横向滑动
+输入框字号至少 16px，避免 iPhone 自动放大
+按钮高度适合触控
+输出内容可横向滚动或自动换行
+底部操作按钮不要遮挡内容
+14. 错误处理
+
+需要处理：
+
+空输入
+API 请求失败
+AI 返回非 JSON
+localStorage 不可用
+复制失败
+导出失败
+
+错误提示使用 toast 或页面内提示。
+
+15. Vercel 部署要求
+项目可以直接部署到 Vercel。
+在 Vercel Project Settings 里配置环境变量：
+OPENAI_API_KEY
+环境变量不要写进 Git。
+提供 .env.example，但不要提交真实 .env.local。
+
+.env.example：
+
+OPENAI_API_KEY=your_api_key_here
+
+Vercel 的环境变量是在源代码外配置的 key-value，可用于构建或函数执行。
+
+16. 验收标准
+
+完成后必须满足：
+
+pnpm dev 可以本地运行。
+页面可以输入粗略想法。
+离线规则模式可以自动拆解字段。
+AI 增强模式通过 /api/analyze 调用服务端 API。
+API Key 不出现在前端 bundle。
+没有 API Key 时，AI 模式不会导致页面崩溃。
+可以生成完整提示词、分层关键词、一句话压缩版、JSON。
+所有输出都包含底部 240px / 12% 白色安全留白规则。
+手账注解分类可以适配餐桌、旅行、人物、宠物、房间、小物件。
+支持复制和导出 txt。
+刷新页面后能恢复上次填写内容。
+手机端布局正常。
+可以部署到 Vercel。
+17. 不要做
+不要做图片上传。
+不要真的生成图片。
+不要把 API Key 放进前端。
+不要使用 NEXT_PUBLIC_OPENAI_API_KEY。
+不要引入复杂数据库。
+不要加登录系统。
+不要使用 Apple 官方素材。
+不要出现小康机器人相关内容。
+不要把项目做成商业电商工具。
+
+
+再给 Codex 追加这一句会更稳：
+
+```md
+请优先实现 MVP：页面、离线规则、输出生成、复制导出、localStorage、Route Handler 骨架。AI 调用部分可以先封装为可替换函数，但环境变量和接口结构必须先做好。

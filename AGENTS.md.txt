@@ -1,0 +1,24 @@
+# AGENTS.md
+
+你是本项目的代码实现助手。
+
+请优先阅读并遵守：
+1. REQUIREMENTS.md
+2. 当前项目代码结构
+3. package.json
+
+工作规则：
+- 不要重写整个项目，除非确实必要。
+- 优先实现 MVP。
+- 使用 Next.js App Router、TypeScript、Tailwind CSS、shadcn/ui。
+- API Key 只能放在服务端环境变量中。
+- 不允许在前端出现 OPENAI_API_KEY 或任何真实 key。
+- 不允许使用 NEXT_PUBLIC_OPENAI_API_KEY。
+- 不做图片上传，不做真实生图。
+- 保持移动端适配。
+- 每次修改后说明改了哪些文件。
+- 能跑测试或 lint 就运行；不能运行要说明原因。
+
+当前第一阶段目标：
+实现页面、离线规则拆解、提示词生成、复制、导出、localStorage、Route Handler 骨架。
+AI 模型调用可以先做成可替换函数，但接口和环境变量结构必须先做好。
