@@ -101,7 +101,7 @@ export default function Home() {
   const allText = `【完整提示词】\n${outputs.full}\n\n【分层关键词】\n${outputs.layered}\n\n【一句话压缩版】\n${outputs.compact}\n\n【JSON 结构化提示词】\n${outputs.json}`;
 
   return (
-    <main className="mx-auto w-full max-w-7xl px-4 py-6 pb-24 md:px-6 md:py-10">
+    <main className="mx-auto w-full max-w-7xl px-4 py-6 pb-[132px] md:px-6 md:py-10 md:pb-[150px]">
       <header className="animal-panel animal-title-card relative mb-6 overflow-hidden p-6 md:p-10">
         <div className="absolute inset-x-0 bottom-0 h-3 bg-[url('/PhotoEditingKeywords/animal-island/wave-yellow.svg')] bg-repeat-x" />
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
@@ -192,14 +192,6 @@ export default function Home() {
             </CardContent>
           </Card>
         </aside>
-      </div>
-      <div className="relative left-1/2 mt-10 w-screen max-w-[100vw] -translate-x-1/2 overflow-hidden">
-        <img
-          src="/PhotoEditingKeywords/animal-island/footer-sea.svg"
-          alt=""
-          className="block h-auto w-full select-none"
-          draggable={false}
-        />
       </div>
     </main>
   );

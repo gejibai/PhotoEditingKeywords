@@ -50,6 +50,7 @@ body {
   overflow-x: clip;
   min-height: 100vh;
   background:
+    url("/PhotoEditingKeywords/animal-island/footer-sea.svg") center bottom / 100vw auto no-repeat,
     linear-gradient(rgba(248, 248, 240, 0.8), rgba(248, 248, 240, 0.92)),
     url("/PhotoEditingKeywords/animal-island/content_bg_pc.jpg") center top / 520px auto fixed,
     var(--animal-bg);
