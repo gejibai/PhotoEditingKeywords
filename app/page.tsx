@@ -193,9 +193,13 @@ export default function Home() {
           </Card>
         </aside>
       </div>
-      <div className="mt-10 h-14 overflow-hidden rounded-t-[28px] border-t-2 border-[#63b6ce]/40 bg-[#98d2e3] shadow-[0_-4px_10px_rgba(107,92,67,0.12)] md:h-16">
-        <div className="h-4 bg-[radial-gradient(circle_at_12px_18px,transparent_18px,#98d2e3_19px)] bg-[length:32px_18px]" />
-        <div className="mx-auto mt-2 h-3 max-w-3xl bg-[url('/PhotoEditingKeywords/animal-island/footer-sea.svg')] bg-bottom bg-[length:900px_auto] bg-no-repeat opacity-35" />
+      <div className="mt-10 overflow-hidden rounded-t-[28px]">
+        <img
+          src="/PhotoEditingKeywords/animal-island/footer-sea.svg"
+          alt=""
+          className="block w-full select-none"
+          draggable={false}
+        />
       </div>
     </main>
   );
