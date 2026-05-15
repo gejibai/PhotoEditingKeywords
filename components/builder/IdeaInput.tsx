@@ -8,6 +8,7 @@ export function IdeaInput({
   onAnalyzeFillEmpty,
   onClear,
   onRestoreDefaults,
+  loading,
 }: {
   value: string;
   onChange: (value: string) => void;
@@ -15,6 +16,7 @@ export function IdeaInput({
   onAnalyzeFillEmpty: () => void;
   onClear: () => void;
   onRestoreDefaults: () => void;
+  loading?: boolean;
 }) {
   return (
     <div className="space-y-3">
@@ -25,8 +27,10 @@ export function IdeaInput({
         className="min-h-32"
       />
       <div className="flex flex-wrap gap-2">
-        <Button onClick={onAnalyzeOverwrite}>智能拆解并覆盖填充</Button>
-        <Button variant="outline" onClick={onAnalyzeFillEmpty}>
+        <Button onClick={onAnalyzeOverwrite} loading={loading}>
+          智能拆解并覆盖填充
+        </Button>
+        <Button variant="outline" onClick={onAnalyzeFillEmpty} loading={loading}>
           只补空项
         </Button>
         <Button variant="secondary" onClick={onClear}>

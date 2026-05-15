@@ -1,10 +1,13 @@
+"use client";
+
 import * as React from "react";
+import { Card as AnimalCard } from "animal-island-ui";
 import { cn } from "@/lib/utils";
 
 export function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <div
-      className={cn("animal-panel rounded-[20px] backdrop-blur", className)}
+    <AnimalCard
+      className={cn("backdrop-blur", className)}
       {...props}
     />
   );
