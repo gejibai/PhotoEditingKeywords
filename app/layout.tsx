@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { Toaster } from "sonner";
-import "animal-island-ui/style";
 import "./globals.css";
 
 export const metadata: Metadata = {

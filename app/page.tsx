@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import { toast } from "sonner";
-import { Collapse, Cursor, Footer, Time, Typewriter } from "animal-island-ui";
 import { CategoryCards } from "@/components/builder/CategoryCards";
 import { IdeaInput } from "@/components/builder/IdeaInput";
 import { PromptForm } from "@/components/builder/PromptForm";
@@ -46,7 +45,6 @@ export default function Home() {
   const [selectedCategory, setSelectedCategory] = React.useState<Category>("general");
   const [activeTab, setActiveTab] = React.useState<OutputTab>("full");
   const [hydrated, setHydrated] = React.useState(false);
-  const [isAnalyzing, setIsAnalyzing] = React.useState(false);
 
   React.useEffect(() => {
     const saved = loadSavedState();
@@ -85,14 +83,10 @@ export default function Home() {
       return;
     }
 
-    setIsAnalyzing(true);
     const { category, ...patch } = analyzeOffline(rawIdea, form, fillMode);
     setSelectedCategory(category);
     setForm((current) => mergeForm(current, patch));
-    window.setTimeout(() => {
-      setIsAnalyzing(false);
-      toast.success(fillMode === "overwrite" ? "已根据原始想法覆盖填充。" : "已根据原始想法补齐空项。");
-    }, 420);
+    toast.success(fillMode === "overwrite" ? "已根据原始想法覆盖填充。" : "已根据原始想法补齐空项。");
   }
 
   async function copyText(text: string) {
@@ -107,8 +101,7 @@ export default function Home() {
   const allText = `【完整提示词】\n${outputs.full}\n\n【分层关键词】\n${outputs.layered}\n\n【一句话压缩版】\n${outputs.compact}\n\n【JSON 结构化提示词】\n${outputs.json}`;
 
   return (
-    <Cursor>
-      <main className="mx-auto max-w-7xl px-4 py-6 pb-24 md:px-6 md:py-10">
+    <main className="mx-auto max-w-7xl px-4 py-6 pb-24 md:px-6 md:py-10">
       <header className="animal-panel animal-title-card relative mb-6 overflow-hidden p-6 md:p-10">
         <div className="absolute inset-x-0 bottom-0 h-3 bg-[url('/PhotoEditingKeywords/animal-island/wave-yellow.svg')] bg-repeat-x" />
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
@@ -117,14 +110,11 @@ export default function Home() {
             <h1 className="text-4xl font-black tracking-[0.01em] text-[#794f27] md:text-6xl">
               日常修图关键词完善器
             </h1>
-            <div className="mt-4 max-w-2xl text-base font-semibold leading-8 text-[#725d42] md:text-lg">
-              <Typewriter speed={18}>输入一句想法，自动拆解成可复制的修图提示词。静态版只整理提示词，不上传图片，也不生成图片。</Typewriter>
-            </div>
+            <p className="mt-4 max-w-2xl text-base font-semibold leading-8 text-[#725d42] md:text-lg">
+              输入一句想法，自动拆解成可复制的修图提示词。MVP 只整理提示词，不上传图片，也不生成图片。
+            </p>
           </div>
-          <div className="flex flex-col items-start gap-3 lg:items-end">
-            <Time />
-            <Badge className="bg-[#fff9dc] text-[#725d42]">静态离线版</Badge>
-          </div>
+          <Badge className="bg-[#fff9dc] text-[#725d42]">静态离线版</Badge>
         </div>
       </header>
 
@@ -136,13 +126,6 @@ export default function Home() {
           </div>
         </div>
         <CategoryCards selectedCategory={selectedCategory} onSelect={applyCategory} />
-      </section>
-
-      <section className="mb-6">
-        <Collapse
-          question="固定输出规则"
-          answer="所有提示词都会保留底部 240px / 12% 纯白安全留白，方便后续放文字、贴纸或手账标注。"
-        />
       </section>
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_440px] lg:items-start">
@@ -158,7 +141,6 @@ export default function Home() {
                 onChange={(value) => updateField("rawIdea", value)}
                 onAnalyzeOverwrite={() => analyze("overwrite")}
                 onAnalyzeFillEmpty={() => analyze("fill-empty")}
-                loading={isAnalyzing}
                 onClear={() => {
                   setForm({ ...defaultFormState, bottomSafeArea: BOTTOM_SAFE_AREA });
                   setSelectedCategory("general");
@@ -211,10 +193,10 @@ export default function Home() {
           </Card>
         </aside>
       </div>
-      <div className="mt-10 overflow-hidden rounded-[20px]">
-        <Footer type="sea" />
+      <div className="mt-10 h-14 overflow-hidden rounded-t-[28px] border-t-2 border-[#63b6ce]/40 bg-[#98d2e3] shadow-[0_-4px_10px_rgba(107,92,67,0.12)] md:h-16">
+        <div className="h-4 bg-[radial-gradient(circle_at_12px_18px,transparent_18px,#98d2e3_19px)] bg-[length:32px_18px]" />
+        <div className="mx-auto mt-2 h-3 max-w-3xl bg-[url('/PhotoEditingKeywords/animal-island/footer-sea.svg')] bg-bottom bg-[length:900px_auto] bg-no-repeat opacity-35" />
       </div>
-      </main>
-    </Cursor>
+    </main>
   );
 }
