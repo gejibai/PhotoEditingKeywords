@@ -26,8 +26,8 @@ export function ResultTabs({
   onExport: () => void;
 }) {
   return (
-    <Tabs value={activeTab} onValueChange={(value) => onTabChange(value as OutputTab)}>
-      <div className="-mx-1 overflow-x-auto px-1 pb-1">
+    <Tabs value={activeTab} onValueChange={(value) => onTabChange(value as OutputTab)} className="min-w-0 max-w-full">
+      <div className="-mx-1 max-w-full overflow-x-auto px-1 pb-1">
         <TabsList className="flex w-max min-w-full gap-1 sm:grid sm:w-full sm:grid-cols-4">
           {(Object.keys(tabLabels) as OutputTab[]).map((tab) => (
             <TabsTrigger key={tab} value={tab} className="min-w-[88px] flex-shrink-0 whitespace-nowrap">
@@ -43,7 +43,7 @@ export function ResultTabs({
           </pre>
         </TabsContent>
       ))}
-      <div className="sticky bottom-3 mt-4 grid gap-2 rounded-[28px] border-2 border-[#9f927d]/50 bg-[#f7f3df]/90 p-3 shadow-[0_4px_10px_rgba(107,92,67,0.28)] backdrop-blur sm:grid-cols-2">
+      <div className="sticky bottom-3 mt-4 grid max-w-full gap-2 rounded-[28px] border-2 border-[#9f927d]/50 bg-[#f7f3df]/90 p-3 shadow-[0_4px_10px_rgba(107,92,67,0.28)] backdrop-blur sm:grid-cols-2">
         <Button onClick={onCopyCurrent}>复制当前 tab</Button>
         <Button variant="outline" onClick={onCopyAll}>
           复制全部结果

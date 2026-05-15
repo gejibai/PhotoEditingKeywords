@@ -43,9 +43,11 @@
 html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
+  overflow-x: hidden;
 }
 
 body {
+  overflow-x: clip;
   min-height: 100vh;
   background:
     linear-gradient(rgba(248, 248, 240, 0.8), rgba(248, 248, 240, 0.92)),
@@ -70,6 +72,9 @@ textarea {
 }
 
 .animal-panel {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   background: var(--animal-card);
   border: 2px solid rgba(159, 146, 125, 0.55);
   color: var(--animal-text);
