@@ -4,7 +4,6 @@ import * as React from "react";
 import { toast } from "sonner";
 import { CategoryCards } from "@/components/builder/CategoryCards";
 import { IdeaInput } from "@/components/builder/IdeaInput";
-import { ModeSwitch } from "@/components/builder/ModeSwitch";
 import { PromptForm } from "@/components/builder/PromptForm";
 import { ResultTabs, type OutputTab } from "@/components/builder/ResultTabs";
 import { Toolbar } from "@/components/builder/Toolbar";
@@ -14,7 +13,7 @@ import { BOTTOM_SAFE_AREA, defaultFormState, templateByCategory } from "@/lib/co
 import { analyzeOffline } from "@/lib/offline-rules";
 import { buildAllOutputs } from "@/lib/prompt-builder";
 import { loadSavedState, saveState } from "@/lib/storage";
-import type { AnalyzeResponse, BuilderMode, Category, FillMode, PromptFormState } from "@/types/prompt";
+import type { Category, FillMode, PromptFormState } from "@/types/prompt";
 
 function mergeForm(form: PromptFormState, patch: Partial<PromptFormState>): PromptFormState {
   return { ...form, ...patch, bottomSafeArea: patch.bottomSafeArea || form.bottomSafeArea || BOTTOM_SAFE_AREA };
@@ -44,7 +43,6 @@ function exportText(filename: string, text: string) {
 export default function Home() {
   const [form, setForm] = React.useState<PromptFormState>(defaultFormState);
   const [selectedCategory, setSelectedCategory] = React.useState<Category>("general");
-  const [mode, setMode] = React.useState<BuilderMode>("offline");
   const [activeTab, setActiveTab] = React.useState<OutputTab>("full");
   const [hydrated, setHydrated] = React.useState(false);
 
@@ -53,16 +51,15 @@ export default function Home() {
     if (saved) {
       setForm(mergeForm(defaultFormState, saved.formState));
       setSelectedCategory(saved.selectedCategory);
-      setMode(saved.mode);
     }
     setHydrated(true);
   }, []);
 
   React.useEffect(() => {
     if (!hydrated) return;
-    const ok = saveState({ formState: form, selectedCategory, mode });
+    const ok = saveState({ formState: form, selectedCategory, mode: "offline" });
     if (!ok) toast.warning("localStorage 不可用，本次填写内容可能无法自动恢复。");
-  }, [form, selectedCategory, mode, hydrated]);
+  }, [form, selectedCategory, hydrated]);
 
   const outputs = React.useMemo(() => buildAllOutputs(form), [form]);
   const filledCount = React.useMemo(
@@ -86,25 +83,6 @@ export default function Home() {
       return;
     }
 
-    if (mode === "ai") {
-      try {
-        const response = await fetch("/api/analyze", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ rawIdea, currentForm: form, mode: fillMode }),
-        });
-        const result = (await response.json()) as AnalyzeResponse;
-        if (!result.ok || !result.data) throw new Error(result.error || "AI 返回格式不完整");
-        const { category, ...patch } = result.data;
-        if (category) setSelectedCategory(category);
-        setForm((current) => mergeForm(current, patch));
-        toast.success("已使用 AI 增强拆解。");
-        return;
-      } catch {
-        toast.warning("AI 增强暂不可用，已使用离线规则拆解。");
-      }
-    }
-
     const { category, ...patch } = analyzeOffline(rawIdea, form, fillMode);
     setSelectedCategory(category);
     setForm((current) => mergeForm(current, patch));
@@ -125,7 +103,7 @@ export default function Home() {
   return (
     <main className="mx-auto max-w-7xl px-4 py-6 pb-24 md:px-6 md:py-10">
       <header className="animal-panel animal-title-card relative mb-6 overflow-hidden p-6 md:p-10">
-        <div className="absolute inset-x-0 bottom-0 h-3 bg-[url('/animal-island/wave-yellow.svg')] bg-repeat-x" />
+        <div className="absolute inset-x-0 bottom-0 h-3 bg-[url('/PhotoEditingKeywords/animal-island/wave-yellow.svg')] bg-repeat-x" />
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-3xl">
             <Badge className="mb-4 bg-[#e6f9f6] text-[#11a89b]">Photo Prompt Builder</Badge>
@@ -136,7 +114,7 @@ export default function Home() {
               输入一句想法，自动拆解成可复制的修图提示词。MVP 只整理提示词，不上传图片，也不生成图片。
             </p>
           </div>
-          <ModeSwitch mode={mode} onModeChange={setMode} />
+          <Badge className="bg-[#fff9dc] text-[#725d42]">静态离线版</Badge>
         </div>
       </header>
 
@@ -215,7 +193,7 @@ export default function Home() {
           </Card>
         </aside>
       </div>
-      <div className="mt-10 h-16 bg-[url('/animal-island/footer-tree.webp')] bg-bottom bg-repeat-x opacity-90" />
+      <div className="mt-10 h-16 bg-[url('/PhotoEditingKeywords/animal-island/footer-tree.webp')] bg-bottom bg-repeat-x opacity-90" />
     </main>
   );
 }

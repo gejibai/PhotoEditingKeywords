@@ -49,7 +49,7 @@ body {
   min-height: 100vh;
   background:
     linear-gradient(rgba(248, 248, 240, 0.8), rgba(248, 248, 240, 0.92)),
-    url("/animal-island/content_bg_pc.jpg") center top / 520px auto fixed,
+    url("/PhotoEditingKeywords/animal-island/content_bg_pc.jpg") center top / 520px auto fixed,
     var(--animal-bg);
   color: var(--animal-text);
   font-family: Nunito, "Noto Sans SC", "Zen Maru Gothic", -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
@@ -72,7 +72,7 @@ body::after {
   bottom: 0;
   height: 80px;
   pointer-events: none;
-  background: url("/animal-island/footer-sea.svg") bottom center / contain repeat-x;
+  background: url("/PhotoEditingKeywords/animal-island/footer-sea.svg") bottom center / contain repeat-x;
   opacity: 0.95;
   z-index: -1;
 }

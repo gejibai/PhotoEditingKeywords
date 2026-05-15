@@ -5,16 +5,24 @@ Next.js App Router + TypeScript + Tailwind CSS MVP for converting rough daily ph
 ## Run
 
 ```bash
-pnpm install
-pnpm dev
+npm install
+npm run dev
 ```
 
-## Environment
+## GitHub Pages
 
-Server-only AI key:
+This project is configured as a static Next.js export for GitHub Pages.
+Pushing to `main` runs `.github/workflows/pages.yml` and publishes the `out/`
+folder automatically.
 
 ```bash
-OPENAI_API_KEY=your_api_key_here
+npm run build
 ```
 
-Do not use `NEXT_PUBLIC_OPENAI_API_KEY`.
+The published URL is:
+
+```text
+https://gejibai.github.io/PhotoEditingKeywords/
+```
+
+This static version uses offline rules only and does not include a backend API.
