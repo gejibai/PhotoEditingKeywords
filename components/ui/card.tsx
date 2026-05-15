@@ -4,7 +4,9 @@ import * as React from "react";
 import { Card as AnimalCard } from "animal-island-ui";
 import { cn } from "@/lib/utils";
 
-export function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+type CardProps = Omit<React.HTMLAttributes<HTMLDivElement>, "color">;
+
+export function Card({ className, ...props }: CardProps) {
   return (
     <AnimalCard
       className={cn("backdrop-blur", className)}
