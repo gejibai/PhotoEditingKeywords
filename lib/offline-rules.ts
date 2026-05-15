@@ -113,7 +113,10 @@ function applyFillMode(
 ): Partial<PromptFormState> {
   if (mode === "overwrite") return patch;
   return Object.fromEntries(
-    Object.entries(patch).filter(([key]) => !currentForm[key as keyof PromptFormState]),
+    Object.entries(patch).filter(([key]) => {
+      const field = key as keyof PromptFormState;
+      return !currentForm[field] || currentForm[field] === defaultFormState[field];
+    }),
   ) as Partial<PromptFormState>;
 }
 

@@ -19,13 +19,15 @@ function mergeForm(form: PromptFormState, patch: Partial<PromptFormState>): Prom
   return { ...form, ...patch, bottomSafeArea: patch.bottomSafeArea || form.bottomSafeArea || BOTTOM_SAFE_AREA };
 }
 
-function fillEmptyForm(form: PromptFormState, patch: Partial<PromptFormState>): PromptFormState {
-  const next: Record<keyof PromptFormState, string> = { ...form };
-  for (const [key, value] of Object.entries(patch) as Array<[keyof PromptFormState, string | undefined]>) {
-    if (value && !next[key]) next[key] = value;
-  }
-  next.bottomSafeArea = next.bottomSafeArea || BOTTOM_SAFE_AREA;
-  return next;
+function resetWithPatch(form: PromptFormState, patch: Partial<PromptFormState>): PromptFormState {
+  return mergeForm(
+    {
+      ...defaultFormState,
+      rawIdea: form.rawIdea,
+      bottomSafeArea: form.bottomSafeArea || BOTTOM_SAFE_AREA,
+    },
+    patch,
+  );
 }
 
 function exportText(filename: string, text: string) {
@@ -73,7 +75,7 @@ export default function Home() {
 
   function applyCategory(category: Category) {
     setSelectedCategory(category);
-    setForm((current) => fillEmptyForm(current, templateByCategory[category]));
+    setForm((current) => resetWithPatch(current, templateByCategory[category]));
   }
 
   async function analyze(fillMode: FillMode) {
@@ -85,7 +87,11 @@ export default function Home() {
 
     const { category, ...patch } = analyzeOffline(rawIdea, form, fillMode);
     setSelectedCategory(category);
-    setForm((current) => mergeForm(current, patch));
+    setForm((current) => (
+      fillMode === "overwrite"
+        ? resetWithPatch(current, patch)
+        : mergeForm(current, patch)
+    ));
     toast.success(fillMode === "overwrite" ? "已根据原始想法覆盖填充。" : "已根据原始想法补齐空项。");
   }
 

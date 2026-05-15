@@ -6,9 +6,10 @@ type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   size?: "default" | "sm" | "lg";
 };
 
-export function Button({ className, variant = "default", size = "default", ...props }: ButtonProps) {
+export function Button({ className, variant = "default", size = "default", type = "button", ...props }: ButtonProps) {
   return (
     <button
+      type={type}
       className={cn(
         "animal-button-press inline-flex items-center justify-center gap-2 border-2 font-semibold tracking-[0.02em] disabled:pointer-events-none disabled:opacity-50",
         "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#19c8b9]",
