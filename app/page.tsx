@@ -193,7 +193,7 @@ export default function Home() {
           </Card>
         </aside>
       </div>
-      <div className="mt-10 h-16 bg-[url('/PhotoEditingKeywords/animal-island/footer-tree.webp')] bg-bottom bg-repeat-x opacity-90" />
+      <div className="mt-10 h-20 bg-[url('/PhotoEditingKeywords/animal-island/footer-sea.svg')] bg-center bg-contain bg-no-repeat opacity-95" />
     </main>
   );
 }

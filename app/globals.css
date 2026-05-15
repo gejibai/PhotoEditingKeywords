@@ -64,19 +64,6 @@ textarea {
   -webkit-tap-highlight-color: transparent;
 }
 
-body::after {
-  content: "";
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 80px;
-  pointer-events: none;
-  background: url("/PhotoEditingKeywords/animal-island/footer-sea.svg") bottom center / contain repeat-x;
-  opacity: 0.95;
-  z-index: -1;
-}
-
 ::selection {
   background: rgba(255, 204, 0, 0.35);
   color: var(--animal-title);
