@@ -21,7 +21,7 @@ function mergeForm(form: PromptFormState, patch: Partial<PromptFormState>): Prom
 }
 
 function fillEmptyForm(form: PromptFormState, patch: Partial<PromptFormState>): PromptFormState {
-  const next = { ...form };
+  const next: Record<keyof PromptFormState, string> = { ...form };
   for (const [key, value] of Object.entries(patch) as Array<[keyof PromptFormState, string | undefined]>) {
     if (value && !next[key]) next[key] = value;
   }

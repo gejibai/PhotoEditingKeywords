@@ -19,7 +19,7 @@ export async function POST(request: Request) {
     } catch {
       const data = analyzeOffline(body.rawIdea, body.currentForm, body.mode);
       return NextResponse.json<AnalyzeResponse>({
-        ok: false,
+        ok: true,
         data,
         error: "AI unavailable; offline fallback data is included",
       });

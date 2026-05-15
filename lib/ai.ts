@@ -1,6 +1,9 @@
-import type { AnalyzeRequest } from "@/types/prompt";
+import type { AnalyzeRequest, AnalyzeResponse } from "@/types/prompt";
 
-export async function analyzeWithAi(_request: AnalyzeRequest, apiKey: string | undefined) {
+export async function analyzeWithAi(
+  _request: AnalyzeRequest,
+  apiKey: string | undefined,
+): Promise<NonNullable<AnalyzeResponse["data"]>> {
   if (!apiKey) {
     throw new Error("OPENAI_API_KEY is not configured");
   }
