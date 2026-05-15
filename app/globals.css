@@ -3,24 +3,37 @@
 @tailwind utilities;
 
 :root {
-  --background: 220 20% 96%;
-  --foreground: 222 47% 11%;
-  --card: 0 0% 100%;
-  --card-foreground: 222 47% 11%;
-  --border: 214 32% 91%;
-  --input: 214 32% 91%;
-  --ring: 217 91% 60%;
-  --primary: 217 91% 60%;
+  --background: 54 36% 95%;
+  --foreground: 34 28% 35%;
+  --card: 48 55% 92%;
+  --card-foreground: 34 28% 35%;
+  --border: 37 17% 56%;
+  --input: 42 24% 79%;
+  --ring: 48 100% 50%;
+  --primary: 175 78% 44%;
   --primary-foreground: 0 0% 100%;
-  --secondary: 210 40% 96%;
-  --secondary-foreground: 222 47% 11%;
-  --muted: 210 40% 96%;
-  --muted-foreground: 215 16% 47%;
-  --accent: 210 40% 96%;
-  --accent-foreground: 222 47% 11%;
-  --destructive: 0 84% 60%;
+  --secondary: 48 55% 92%;
+  --secondary-foreground: 34 28% 35%;
+  --muted: 45 33% 90%;
+  --muted-foreground: 38 13% 48%;
+  --accent: 175 76% 94%;
+  --accent-foreground: 34 28% 35%;
+  --destructive: 0 69% 62%;
   --destructive-foreground: 0 0% 100%;
-  --radius: 1rem;
+  --radius: 20px;
+  --animal-bg: #f8f8f0;
+  --animal-card: rgb(247, 243, 223);
+  --animal-text: #725d42;
+  --animal-title: #794f27;
+  --animal-muted: #9f927d;
+  --animal-teal: #19c8b9;
+  --animal-teal-active: #11a89b;
+  --animal-yellow: #ffcc00;
+  --animal-yellow-dark: #e0b800;
+  --animal-border: #9f927d;
+  --animal-input: #c4b89e;
+  --animal-shadow: #bdaea0;
+  --animal-input-shadow: #d4c9b4;
 }
 
 * {
@@ -35,9 +48,13 @@ html {
 body {
   min-height: 100vh;
   background:
-    radial-gradient(circle at top left, rgba(255, 255, 255, 0.95), transparent 34rem),
-    linear-gradient(145deg, #f7f7f8 0%, #eceff3 100%);
-  color: hsl(var(--foreground));
+    linear-gradient(rgba(248, 248, 240, 0.8), rgba(248, 248, 240, 0.92)),
+    url("/animal-island/content_bg_pc.jpg") center top / 520px auto fixed,
+    var(--animal-bg);
+  color: var(--animal-text);
+  font-family: Nunito, "Noto Sans SC", "Zen Maru Gothic", -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.01em;
 }
 
 button,
@@ -45,4 +62,48 @@ input,
 select,
 textarea {
   -webkit-tap-highlight-color: transparent;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 80px;
+  pointer-events: none;
+  background: url("/animal-island/footer-sea.svg") bottom center / contain repeat-x;
+  opacity: 0.95;
+  z-index: -1;
+}
+
+::selection {
+  background: rgba(255, 204, 0, 0.35);
+  color: var(--animal-title);
+}
+
+.animal-panel {
+  background: var(--animal-card);
+  border: 2px solid rgba(159, 146, 125, 0.55);
+  color: var(--animal-text);
+  box-shadow: 0 4px 10px rgba(107, 92, 67, 0.32);
+}
+
+.animal-title-card {
+  border-radius: 40px 35px 45px 38px / 38px 45px 35px 40px;
+}
+
+.animal-button-press {
+  box-shadow: 0 5px 0 0 var(--animal-shadow);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animal-button-press:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 0 0 var(--animal-shadow);
+}
+
+.animal-button-press:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 0 var(--animal-shadow);
 }

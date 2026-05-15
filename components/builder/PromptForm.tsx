@@ -20,7 +20,7 @@ function FieldControl({
   const value = form[field];
   return (
     <label className="grid gap-2">
-      <span className="text-sm font-semibold text-slate-700">{fieldLabels[field]}</span>
+      <span className="text-sm font-bold tracking-[0.02em] text-[#794f27]">{fieldLabels[field]}</span>
       {multiline ? (
         <Textarea value={value} onChange={(event) => onChange(field, event.target.value)} />
       ) : (
@@ -42,7 +42,7 @@ export function PromptForm({
   return (
     <div className="space-y-7">
       <section className="grid gap-4 md:grid-cols-2">
-        <h3 className="md:col-span-2 text-lg font-bold text-slate-950">基础信息</h3>
+        <h3 className="md:col-span-2 text-lg font-black text-[#794f27]">基础信息</h3>
         <FieldControl form={form} field="photoType" onChange={onChange} />
         <FieldControl form={form} field="usageScene" onChange={onChange} />
         <FieldControl form={form} field="keep" onChange={onChange} multiline />
@@ -50,7 +50,7 @@ export function PromptForm({
       </section>
 
       <section className="grid gap-4 md:grid-cols-2">
-        <h3 className="md:col-span-2 text-lg font-bold text-slate-950">画面方向</h3>
+        <h3 className="md:col-span-2 text-lg font-black text-[#794f27]">画面方向</h3>
         <FieldControl form={form} field="subject" onChange={onChange} />
         <FieldControl form={form} field="scene" onChange={onChange} />
         <FieldControl form={form} field="actionRelation" onChange={onChange} />
@@ -60,14 +60,14 @@ export function PromptForm({
       </section>
 
       <section className="grid gap-4 md:grid-cols-2">
-        <h3 className="md:col-span-2 text-lg font-bold text-slate-950">视觉风格</h3>
+        <h3 className="md:col-span-2 text-lg font-black text-[#794f27]">视觉风格</h3>
         <FieldControl form={form} field="targetStyle" onChange={onChange} />
         <FieldControl form={form} field="lighting" onChange={onChange} />
         <FieldControl form={form} field="color" onChange={onChange} />
         <FieldControl form={form} field="texture" onChange={onChange} />
         <FieldControl form={form} field="quality" onChange={onChange} />
         <label className="grid gap-2">
-          <span className="text-sm font-semibold text-slate-700">{fieldLabels.retouchStrength}</span>
+          <span className="text-sm font-bold tracking-[0.02em] text-[#794f27]">{fieldLabels.retouchStrength}</span>
           <SelectNative value={form.retouchStrength} onChange={(event) => onChange("retouchStrength", event.target.value)}>
             <option>轻微修图</option>
             <option>自然轻修</option>
@@ -79,8 +79,8 @@ export function PromptForm({
       </section>
 
       {showNoteFields ? (
-        <section className="grid gap-4 rounded-[24px] bg-rose-50/70 p-4 md:grid-cols-2">
-          <h3 className="md:col-span-2 text-lg font-bold text-slate-950">手账注解专用</h3>
+        <section className="grid gap-4 rounded-[30px] border-2 border-[#f8a6b2]/70 bg-[#fff9dc] p-4 shadow-[0_4px_10px_rgba(107,92,67,0.18)] md:grid-cols-2">
+          <h3 className="md:col-span-2 text-lg font-black text-[#794f27]">手账注解专用</h3>
           <FieldControl form={form} field="annotationObjects" onChange={onChange} />
           <FieldControl form={form} field="annotationTextStyle" onChange={onChange} />
           <FieldControl form={form} field="lineStyle" onChange={onChange} />
@@ -92,7 +92,7 @@ export function PromptForm({
       ) : null}
 
       <section className="grid gap-4">
-        <h3 className="text-lg font-bold text-slate-950">禁止项与固定规则</h3>
+        <h3 className="text-lg font-black text-[#794f27]">禁止项与固定规则</h3>
         <FieldControl form={form} field="negativePrompt" onChange={onChange} multiline />
         <FieldControl form={form} field="bottomSafeArea" onChange={onChange} multiline />
       </section>

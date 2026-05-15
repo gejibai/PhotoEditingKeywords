@@ -16,13 +16,15 @@ export function Switch({
       disabled={disabled}
       onClick={() => onCheckedChange(!checked)}
       className={cn(
-        "relative h-8 w-14 rounded-full border border-slate-200 transition disabled:opacity-50",
-        checked ? "bg-blue-600" : "bg-slate-200",
+        "relative h-8 w-14 rounded-full border-[2.5px] transition disabled:opacity-50",
+        checked
+          ? "border-[#6fba2c] bg-[#86d67a] shadow-[0_3px_0_0_#5a9e1e]"
+          : "border-[#c4b89e] bg-[#d4c9b4] shadow-[0_3px_0_0_#bdaea0]",
       )}
     >
       <span
         className={cn(
-          "absolute left-1 top-1 h-6 w-6 rounded-full bg-white shadow transition",
+          "absolute left-1 top-1 h-5 w-5 rounded-full bg-white shadow-[0_3px_0_0_#bdaea0] transition",
           checked && "translate-x-6",
         )}
       />

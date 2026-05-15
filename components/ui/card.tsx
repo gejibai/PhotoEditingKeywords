@@ -4,16 +4,16 @@ import { cn } from "@/lib/utils";
 export function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn("rounded-[28px] border border-white/80 bg-white/90 shadow-soft backdrop-blur", className)}
+      className={cn("animal-panel rounded-[20px] backdrop-blur", className)}
       {...props}
     />
   );
 }
 
 export function CardHeader({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("space-y-2 p-5 pb-3", className)} {...props} />;
+  return <div className={cn("space-y-2 p-5 pb-3 text-[#725d42]", className)} {...props} />;
 }
 
 export function CardContent({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("p-5 pt-3", className)} {...props} />;
+  return <div className={cn("p-5 pt-3 text-[#725d42]", className)} {...props} />;
 }

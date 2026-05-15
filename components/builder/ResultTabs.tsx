@@ -36,12 +36,12 @@ export function ResultTabs({
       </TabsList>
       {(Object.keys(tabLabels) as OutputTab[]).map((tab) => (
         <TabsContent key={tab} value={tab} className="mt-4">
-          <pre className="min-h-80 max-h-[60vh] overflow-auto whitespace-pre-wrap rounded-[24px] bg-slate-950 p-4 text-sm leading-7 text-slate-50">
+          <pre className="min-h-80 max-h-[60vh] overflow-auto whitespace-pre-wrap rounded-[20px] border border-[#3d3028] bg-[#2b2118] p-5 font-mono text-sm font-semibold leading-7 text-[#e8d5bc]">
             {outputs[tab]}
           </pre>
         </TabsContent>
       ))}
-      <div className="sticky bottom-3 mt-4 grid gap-2 rounded-[24px] border border-slate-200 bg-white/85 p-3 shadow-soft backdrop-blur sm:grid-cols-2">
+      <div className="sticky bottom-3 mt-4 grid gap-2 rounded-[28px] border-2 border-[#9f927d]/50 bg-[#f7f3df]/90 p-3 shadow-[0_4px_10px_rgba(107,92,67,0.28)] backdrop-blur sm:grid-cols-2">
         <Button onClick={onCopyCurrent}>复制当前 tab</Button>
         <Button variant="outline" onClick={onCopyAll}>
           复制全部结果

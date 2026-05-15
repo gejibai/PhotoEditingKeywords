@@ -6,13 +6,13 @@ export function Toolbar({ filledCount }: { filledCount: number }) {
   return (
     <div className="flex flex-wrap items-center justify-between gap-3">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight text-slate-950">生成结果</h2>
-        <p className="mt-1 text-sm text-slate-500">自动包含底部 240px / 12% 安全留白规则。</p>
+        <h2 className="text-2xl font-black tracking-[0.01em] text-[#794f27]">生成结果</h2>
+        <p className="mt-1 text-sm font-semibold text-[#9f927d]">自动包含底部 240px / 12% 安全留白规则。</p>
       </div>
       <div className="flex items-center gap-3">
         <Badge>完整度 {score}%</Badge>
         <Separator className="hidden h-6 w-px sm:block" />
-        <Badge className="bg-blue-50 text-blue-700">MVP</Badge>
+        <Badge className="bg-[#e6f9f6] text-[#11a89b]">MVP</Badge>
       </div>
     </div>
   );

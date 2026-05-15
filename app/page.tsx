@@ -123,15 +123,16 @@ export default function Home() {
   const allText = `【完整提示词】\n${outputs.full}\n\n【分层关键词】\n${outputs.layered}\n\n【一句话压缩版】\n${outputs.compact}\n\n【JSON 结构化提示词】\n${outputs.json}`;
 
   return (
-    <main className="mx-auto max-w-7xl px-4 py-6 pb-20 md:px-6 md:py-10">
-      <header className="mb-6 rounded-[32px] border border-white/80 bg-white/75 p-6 shadow-soft backdrop-blur md:p-10">
+    <main className="mx-auto max-w-7xl px-4 py-6 pb-24 md:px-6 md:py-10">
+      <header className="animal-panel animal-title-card relative mb-6 overflow-hidden p-6 md:p-10">
+        <div className="absolute inset-x-0 bottom-0 h-3 bg-[url('/animal-island/wave-yellow.svg')] bg-repeat-x" />
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-3xl">
-            <Badge className="mb-4 bg-blue-50 text-blue-700">Photo Prompt Builder</Badge>
-            <h1 className="text-4xl font-black tracking-tight text-slate-950 md:text-6xl">
+            <Badge className="mb-4 bg-[#e6f9f6] text-[#11a89b]">Photo Prompt Builder</Badge>
+            <h1 className="text-4xl font-black tracking-[0.01em] text-[#794f27] md:text-6xl">
               日常修图关键词完善器
             </h1>
-            <p className="mt-4 max-w-2xl text-base leading-8 text-slate-600 md:text-lg">
+            <p className="mt-4 max-w-2xl text-base font-semibold leading-8 text-[#725d42] md:text-lg">
               输入一句想法，自动拆解成可复制的修图提示词。MVP 只整理提示词，不上传图片，也不生成图片。
             </p>
           </div>
@@ -142,8 +143,8 @@ export default function Home() {
       <section className="mb-6">
         <div className="mb-3 flex items-end justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-bold tracking-tight text-slate-950">选择修图方向</h2>
-            <p className="mt-1 text-sm text-slate-500">点击分类会补充推荐字段，不会清掉你已经写好的内容。</p>
+            <h2 className="text-2xl font-black tracking-[0.01em] text-[#794f27]">选择修图方向</h2>
+            <p className="mt-1 text-sm font-semibold text-[#9f927d]">点击分类会补充推荐字段，不会清掉你已经写好的内容。</p>
           </div>
         </div>
         <CategoryCards selectedCategory={selectedCategory} onSelect={applyCategory} />
@@ -153,8 +154,8 @@ export default function Home() {
         <div className="space-y-6">
           <Card>
             <CardHeader>
-              <h2 className="text-2xl font-bold tracking-tight text-slate-950">原始想法</h2>
-              <p className="text-sm text-slate-500">一句话就够，后面可以慢慢补细节。</p>
+              <h2 className="text-2xl font-black tracking-[0.01em] text-[#794f27]">原始想法</h2>
+              <p className="text-sm font-semibold text-[#9f927d]">一句话就够，后面可以慢慢补细节。</p>
             </CardHeader>
             <CardContent>
               <IdeaInput
@@ -177,7 +178,7 @@ export default function Home() {
 
           <Card>
             <CardHeader>
-              <h2 className="text-2xl font-bold tracking-tight text-slate-950">字段完善</h2>
+              <h2 className="text-2xl font-black tracking-[0.01em] text-[#794f27]">字段完善</h2>
             </CardHeader>
             <CardContent>
               <PromptForm
@@ -214,6 +215,7 @@ export default function Home() {
           </Card>
         </aside>
       </div>
+      <div className="mt-10 h-16 bg-[url('/animal-island/footer-tree.webp')] bg-bottom bg-repeat-x opacity-90" />
     </main>
   );
 }
