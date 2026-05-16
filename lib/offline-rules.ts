@@ -110,28 +110,44 @@ function applyFillMode(
   currentForm: PromptFormState,
   patch: Partial<PromptFormState>,
   mode: FillMode,
+  category: Category,
 ): Partial<PromptFormState> {
   if (mode === "overwrite") return patch;
-  return Object.fromEntries(
+
+  const filtered = Object.fromEntries(
     Object.entries(patch).filter(([key]) => {
       const field = key as keyof PromptFormState;
       return !currentForm[field] || currentForm[field] === defaultFormState[field];
     }),
   ) as Partial<PromptFormState>;
+
+  filtered.rawIdea = patch.rawIdea;
+  if (
+    patch.edit &&
+    (!currentForm.edit ||
+      currentForm.edit === defaultFormState.edit ||
+      currentForm.edit === templateByCategory[category].edit)
+  ) {
+    filtered.edit = patch.edit;
+  }
+
+  return filtered;
 }
 
 export function analyzeOffline(
   rawIdea: string,
   currentForm: PromptFormState,
   mode: FillMode,
+  fallbackCategory: Category = "general",
 ): Partial<PromptFormState> & { category: Category } {
-  const category = detectCategory(rawIdea, "general");
+  const category = detectCategory(rawIdea, fallbackCategory);
   const template = templateByCategory[category];
   const enhancements = ideaEnhancements(rawIdea);
   const patch: Partial<PromptFormState> = {
     ...template,
     rawIdea,
     photoType: detectPhotoType(rawIdea, category),
+    edit: uniqueJoin([`根据原始想法进行修图：${rawIdea}`, template.edit]),
     targetStyle: uniqueJoin([template.targetStyle, enhancements.targetStyle]),
     mood: uniqueJoin([template.mood, enhancements.mood]),
     lighting: uniqueJoin([template.lighting, enhancements.lighting]),
@@ -140,7 +156,7 @@ export function analyzeOffline(
   };
 
   return {
-    ...applyFillMode(currentForm, patch, mode),
+    ...applyFillMode(currentForm, patch, mode, category),
     category,
   };
 }

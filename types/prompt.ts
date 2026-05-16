@@ -10,7 +10,7 @@ export type Category =
 
 export type FillMode = "overwrite" | "fill-empty";
 
-export type BuilderMode = "offline" | "ai";
+export type BuilderMode = "offline";
 
 export type PromptFormState = {
   rawIdea: string;
@@ -43,16 +43,4 @@ export type SavedBuilderState = {
   formState: PromptFormState;
   selectedCategory: Category;
   mode: BuilderMode;
-};
-
-export type AnalyzeRequest = {
-  rawIdea: string;
-  currentForm: PromptFormState;
-  mode: FillMode;
-};
-
-export type AnalyzeResponse = {
-  ok: boolean;
-  data?: Partial<PromptFormState> & { category?: Category };
-  error?: string;
 };

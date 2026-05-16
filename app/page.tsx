@@ -30,6 +30,20 @@ function resetWithPatch(form: PromptFormState, patch: Partial<PromptFormState>):
   );
 }
 
+function mergeTemplatePreservingUser(
+  form: PromptFormState,
+  patch: Partial<PromptFormState>,
+): PromptFormState {
+  const next = { ...form };
+  for (const [key, value] of Object.entries(patch) as Array<[keyof PromptFormState, string | undefined]>) {
+    if (!value) continue;
+    if (!next[key] || next[key] === defaultFormState[key]) {
+      next[key] = value;
+    }
+  }
+  return mergeForm(next, {});
+}
+
 function exportText(filename: string, text: string) {
   const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
   const url = URL.createObjectURL(blob);
@@ -75,7 +89,7 @@ export default function Home() {
 
   function applyCategory(category: Category) {
     setSelectedCategory(category);
-    setForm((current) => resetWithPatch(current, templateByCategory[category]));
+    setForm((current) => mergeTemplatePreservingUser(current, templateByCategory[category]));
   }
 
   async function analyze(fillMode: FillMode) {
@@ -85,7 +99,7 @@ export default function Home() {
       return;
     }
 
-    const { category, ...patch } = analyzeOffline(rawIdea, form, fillMode);
+    const { category, ...patch } = analyzeOffline(rawIdea, form, fillMode, selectedCategory);
     setSelectedCategory(category);
     setForm((current) => (
       fillMode === "overwrite"
