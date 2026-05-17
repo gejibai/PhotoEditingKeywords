@@ -145,12 +145,12 @@ export default function Home() {
         <div className="absolute inset-x-0 bottom-0 h-3 bg-[url('/PhotoEditingKeywords/animal-island/wave-yellow.svg')] bg-repeat-x" />
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-3xl">
-            <Badge className="mb-4 bg-[#e6f9f6] text-[#11a89b]">Photo Prompt Builder</Badge>
+            <Badge className="mb-4 bg-[#e6f9f6] text-[#11a89b]">修图灵感小帮手</Badge>
             <h1 className="text-4xl font-black tracking-[0.01em] text-[#794f27] md:text-6xl">
-              日常修图关键词完善器
+              修图魔法铺
             </h1>
             <p className="mt-4 max-w-2xl text-base font-semibold leading-8 text-[#725d42] md:text-lg">
-              选一个方向，写一句想法，直接复制能用的修图提示词。不上传图片，也不生成图片。
+              把“想变好看一点”翻译成清楚的修图提示词，顺手整理风格、光线、色彩、留白和避坑要求。
             </p>
           </div>
           <Badge className="bg-[#fff9dc] text-[#725d42]">静态离线版</Badge>

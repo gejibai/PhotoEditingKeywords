@@ -4,8 +4,8 @@ import { Toaster } from "sonner";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "日常修图关键词完善器",
-  description: "输入一句想法，自动拆解成可复制的修图提示词。",
+  title: "修图魔法铺",
+  description: "把一句修图想法整理成可复制的提示词。",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
