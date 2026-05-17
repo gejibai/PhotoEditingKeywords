@@ -6,6 +6,7 @@ export type Category =
   | "travel"
   | "pet_object"
   | "cleanup"
+  | "doodle_snap"
   | "general";
 
 export type FillMode = "overwrite" | "fill-empty";

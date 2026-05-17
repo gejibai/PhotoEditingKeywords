@@ -6,8 +6,7 @@ export function Toolbar({ filledCount }: { filledCount: number }) {
   return (
     <div className="flex flex-wrap items-center justify-between gap-3">
       <div>
-        <h2 className="text-2xl font-black tracking-[0.01em] text-[#794f27]">生成结果</h2>
-        <p className="mt-1 text-sm font-semibold text-[#9f927d]">自动包含底部 240px / 12% 安全留白规则。</p>
+        <p className="mt-1 text-sm font-semibold text-[#9f927d]">默认复制“推荐复制版”就可以用，其他格式放在旁边备用。</p>
       </div>
       <div className="flex items-center gap-3">
         <Badge>完整度 {score}%</Badge>

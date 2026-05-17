@@ -4,9 +4,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 export type OutputTab = "full" | "layered" | "compact" | "json";
 
 const tabLabels: Record<OutputTab, string> = {
-  full: "完整提示词",
-  layered: "分层关键词",
-  compact: "一句话",
+  full: "推荐复制版",
+  layered: "关键词",
+  compact: "短版",
   json: "JSON",
 };
 
@@ -44,12 +44,12 @@ export function ResultTabs({
         </TabsContent>
       ))}
       <div className="sticky bottom-3 mt-4 grid max-w-full gap-2 rounded-[28px] border-2 border-[#9f927d]/50 bg-[#f7f3df]/90 p-3 shadow-[0_4px_10px_rgba(107,92,67,0.28)] backdrop-blur sm:grid-cols-2">
-        <Button onClick={onCopyCurrent}>复制当前 tab</Button>
+        <Button onClick={onCopyCurrent}>复制这版</Button>
         <Button variant="outline" onClick={onCopyAll}>
-          复制全部结果
+          复制全部格式
         </Button>
         <Button className="sm:col-span-2" variant="dark" onClick={onExport}>
-          导出 .txt
+          保存成 .txt
         </Button>
       </div>
     </Tabs>

@@ -3,6 +3,10 @@ import type { Category, FillMode, PromptFormState } from "@/types/prompt";
 
 const rules: Array<{ category: Category; words: string[] }> = [
   {
+    category: "doodle_snap",
+    words: ["马克笔", "数字马克笔", "霓虹", "混乱涂鸦", "密集涂鸦", "涂鸦覆盖", "快照", "手持手机", "学生日记", "杂志标记", "故事批注"],
+  },
+  {
     category: "note",
     words: ["手账", "注解", "涂鸦", "标注", "箭头", "小字", "日系", "可爱", "白色线条", "描边", "doodle"],
   },
@@ -54,6 +58,7 @@ function detectPhotoType(rawIdea: string, category: Category) {
   if (hasAny(text, ["猫", "狗", "宠物"])) return "宠物照片";
   if (hasAny(text, ["杯子", "书", "花", "植物", "玩偶", "小物", "静物"])) return "物件静物";
   if (hasAny(text, ["餐桌", "咖啡", "甜品", "饮料", "饭", "食物"])) return "餐桌/咖啡/甜品";
+  if (hasAny(text, ["快照", "手持手机", "马克笔", "霓虹", "涂鸦覆盖"])) return "真实手持手机随拍快照";
   if (hasAny(text, ["旅行", "街拍", "街道", "城市", "路牌"])) return "旅行街拍";
   if (hasAny(text, ["海边", "山", "天空", "风景", "公园", "草地"])) return "风景照片";
   if (hasAny(text, ["房间", "卧室", "客厅", "书桌", "室内", "咖啡馆", "餐厅"])) return "室内场景";
