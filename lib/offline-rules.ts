@@ -152,7 +152,7 @@ export function analyzeOffline(
     ...template,
     rawIdea,
     photoType: detectPhotoType(rawIdea, category),
-    edit: uniqueJoin([`根据原始想法进行修图：${rawIdea}`, template.edit]),
+    edit: uniqueJoin([rawIdea, template.edit]),
     targetStyle: uniqueJoin([template.targetStyle, enhancements.targetStyle]),
     mood: uniqueJoin([template.mood, enhancements.mood]),
     lighting: uniqueJoin([template.lighting, enhancements.lighting]),

@@ -9,9 +9,9 @@ function line(label: string, value: string) {
   return `${label}：${value || "未填写"}`;
 }
 
-function noteRules(form: PromptFormState) {
-  if (!clean(form.annotationObjects) && !clean(form.annotationTextStyle) && !clean(form.lineStyle) && !clean(form.decorations)) {
-    return "无特殊手账注解要求。";
+function annotationRules(form: PromptFormState) {
+  if (!clean(form.annotationObjects) && !clean(form.annotationTextStyle) && !clean(form.lineStyle) && !clean(form.decorations) && !clean(form.blankSpaceRule)) {
+    return "";
   }
 
   return [
@@ -20,13 +20,14 @@ function noteRules(form: PromptFormState) {
     clean(form.lineStyle) && `线条：${form.lineStyle}`,
     clean(form.decorations) && `装饰：${form.decorations}`,
     clean(form.blankSpaceRule) && `留白：${form.blankSpaceRule}`,
-    "文字必须清晰可读，不要生成乱码。",
+    "如包含文字，文字必须清晰可读，不要生成乱码。",
   ]
     .filter(Boolean)
     .join("\n");
 }
 
 export function buildFullPrompt(form: PromptFormState): string {
+  const annotations = annotationRules(form);
   return [
     line("修图目标", `${form.photoType || "日常照片"}；${form.usageScene || "通用修图工具"}`),
     line("保留内容", form.keep),
@@ -38,13 +39,14 @@ export function buildFullPrompt(form: PromptFormState): string {
     line("风格要求", [form.targetStyle, form.mood, form.retouchStrength].filter(Boolean).join("；")),
     line("光线与色彩", [form.lighting, form.color, form.texture].filter(Boolean).join("；")),
     line("构图与画质", [form.composition, form.aspectRatio, form.quality].filter(Boolean).join("；")),
-    line("手账注解规则", noteRules(form)),
+    annotations ? line("注解与涂鸦规则", annotations) : "",
     line("底部安全留白", form.bottomSafeArea || BOTTOM_SAFE_AREA),
     line("禁止项", form.negativePrompt),
-  ].join("\n\n");
+  ].filter(Boolean).join("\n\n");
 }
 
 export function buildLayeredKeywords(form: PromptFormState): string {
+  const annotations = annotationRules(form);
   return [
     line("主体", form.subject || form.photoType),
     line("场景", form.scene || form.usageScene),
@@ -55,13 +57,14 @@ export function buildLayeredKeywords(form: PromptFormState): string {
     line("质感", form.texture),
     line("构图", [form.composition, form.aspectRatio].filter(Boolean).join("；")),
     line("画质", form.quality),
-    line("手账注解", noteRules(form)),
+    annotations ? line("注解 / 涂鸦", annotations) : "",
     line("底部安全留白", form.bottomSafeArea || BOTTOM_SAFE_AREA),
     line("负面词", form.negativePrompt),
-  ].join("\n");
+  ].filter(Boolean).join("\n");
 }
 
 export function buildCompactPrompt(form: PromptFormState): string {
+  const annotations = annotationRules(form);
   return [
     form.photoType || "日常照片修图",
     form.edit,
@@ -70,12 +73,12 @@ export function buildCompactPrompt(form: PromptFormState): string {
     form.lighting,
     form.color,
     form.quality,
-    form.annotationObjects || form.lineStyle ? "白色手绘注解、短句小碎念、保留空白" : "",
+    annotations ? "加入清晰可读的注解或涂鸦覆盖，保留底图可辨识" : "",
     "底部额外预留不少于 240px 纯白色范围，或约占画面高度 12% 的底部安全留白区",
     form.negativePrompt ? `不要：${form.negativePrompt}` : "",
   ]
     .filter(Boolean)
-    .join("，");
+    .join("；");
 }
 
 export function buildJsonPrompt(form: PromptFormState): string {
@@ -92,6 +95,7 @@ export function buildJsonPrompt(form: PromptFormState): string {
       color: form.color,
       composition: form.composition,
       quality: form.quality,
+      annotations: annotationRules(form),
       bottom_safe_area: form.bottomSafeArea || BOTTOM_SAFE_AREA,
       negative_prompt: form.negativePrompt,
     },
