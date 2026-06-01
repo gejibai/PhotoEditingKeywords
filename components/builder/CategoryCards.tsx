@@ -10,14 +10,14 @@ export function CategoryCards({
   onSelect: (category: Category) => void;
 }) {
   return (
-    <div className="flex gap-4 overflow-x-auto pb-3 md:grid md:grid-cols-3 md:overflow-visible xl:grid-cols-9">
+    <div className="flex gap-4 overflow-x-auto pb-3 md:grid md:grid-cols-3 md:overflow-visible xl:grid-cols-7">
       {categories.map((category) => (
         <button
           key={category.id}
           type="button"
           onClick={() => onSelect(category.id)}
           className={cn(
-            "animal-button-press min-h-32 min-w-40 rounded-[32px] border-[2.5px] bg-[#f7f3df] p-4 text-left transition",
+            "animal-button-press aspect-square min-h-32 min-w-40 rounded-[28px] border-[2.5px] bg-[#f7f3df] p-4 text-left transition",
             "hover:-translate-y-1",
             selectedCategory === category.id
               ? "border-[#11a89b] bg-[#82d5bb] text-white"

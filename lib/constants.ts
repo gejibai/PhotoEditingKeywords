@@ -55,12 +55,6 @@ export const categories: Array<{
     accent: "bg-violet-50 text-violet-700",
   },
   {
-    id: "note",
-    name: "加手账小字",
-    description: "白色手绘线、箭头、小碎念文字",
-    accent: "bg-rose-50 text-rose-700",
-  },
-  {
     id: "travel",
     name: "旅行更出片",
     description: "城市、路牌、海边、山野、记忆感",
@@ -77,12 +71,6 @@ export const categories: Array<{
     name: "去掉杂物",
     description: "清理背景、补空白、改比例、留白",
     accent: "bg-sky-50 text-sky-700",
-  },
-  {
-    id: "doodle_snap",
-    name: "涂鸦快照风",
-    description: "手持随拍、霓虹马克笔、密集涂鸦覆盖",
-    accent: "bg-fuchsia-50 text-fuchsia-700",
   },
   {
     id: "general",
@@ -221,6 +209,96 @@ export const templateByCategory: Record<Category, Partial<PromptFormState>> = {
     negativePrompt: "不要过度滤镜，不要文字乱码，不要装饰过满，不要改变真实主体",
   },
 };
+
+export type TrendTemplate = {
+  id: string;
+  category: Category;
+  name: string;
+  tag: string;
+  description: string;
+  rawIdea: string;
+  form: Partial<PromptFormState>;
+};
+
+export const trendTemplates: TrendTemplate[] = [
+  {
+    id: "note",
+    category: "note",
+    name: "手账碎碎念",
+    tag: "可爱注解",
+    description: "白色线条、小箭头、小字批注，适合咖啡、餐桌、日常照片。",
+    rawIdea: "咖啡店或餐桌照片加白色手账小字，保留原图氛围，底部留白方便放文字",
+    form: {
+      ...templateByCategory.note,
+      rawIdea: "咖啡店或餐桌照片加白色手账小字，保留原图氛围，底部留白方便放文字",
+      edit: "添加白色手绘线条、物件轮廓描边、箭头或虚线引导、短句小碎念注解和少量可爱装饰；保留原图氛围，底部留白方便后期排版",
+      mood: "日记感、小碎念、轻松、可爱但不幼稚",
+      color: "以白色手绘线为主，少量奶油色、浅粉或浅蓝点缀，整体温柔干净",
+      blankSpaceRule: "注解和装饰围绕主体分布，保留空白，不进入底部安全留白区",
+    },
+  },
+  {
+    id: "doodle_snap",
+    category: "doodle_snap",
+    name: "涂鸦快照风",
+    tag: "高能出片",
+    description: "霓虹马克笔、密集涂鸦、杂志标记感，适合做社交平台故事图。",
+    rawIdea: "真实手机随拍，加霓虹马克笔涂鸦，密集混乱一点，像学生日记和杂志标记",
+    form: {
+      ...templateByCategory.doodle_snap,
+      rawIdea: "真实手机随拍，加霓虹马克笔涂鸦，密集混乱一点，像学生日记和杂志标记",
+      edit: "叠加高能、密集、混乱的数字马克笔涂鸦；用亮粉色粗线圈出主体，加入青色偏移、黄橙尖刺、手写大字、星星、箭头、爪印、蜘蛛网和涂鸦条，像社交媒体故事批注",
+      mood: "青春、俏皮、夸张、密集、有一点过度刺激但很好玩",
+      color: "亮粉色、青色偏移、黄橙尖刺、黑色摇晃轮廓和霓虹高对比点缀",
+      negativePrompt: "不要做成干净极简风，不要只有少量装饰，不要把底图完全盖住，不要生成乱码文字，不要让主体完全不可辨认",
+    },
+  },
+  {
+    id: "film",
+    category: "film",
+    name: "低饱和胶片",
+    tag: "松弛氛围",
+    description: "轻颗粒、低对比、随手拍感，适合街拍、旅行和生活记录。",
+    rawIdea: "旅行街拍调成低饱和胶片感，有一点随手拍颗粒，松弛自然",
+    form: {
+      ...templateByCategory.film,
+      rawIdea: "旅行街拍调成低饱和胶片感，有一点随手拍颗粒，松弛自然",
+      edit: "加入低饱和胶片色调、轻微颗粒、柔和对比和随手拍氛围；保留真实曝光和人物特征",
+      targetStyle: "低饱和胶片感、CCD随手拍、复古生活照、轻颗粒",
+      mood: "松弛、怀旧、自然、不刻意摆拍",
+      color: "低饱和、轻微偏暖或偏青，黑位不死黑，高光柔和不过曝",
+      negativePrompt: "不要过度锐化，不要强 HDR，不要脏黄，不要滤镜太重，不要塑料感",
+    },
+  },
+  {
+    id: "lifestyle",
+    category: "lifestyle",
+    name: "奶油生活感",
+    tag: "温柔干净",
+    description: "暖白、奶油色、窗边自然光，适合房间、咖啡馆和书桌。",
+    rawIdea: "房间或咖啡馆照片变成奶油生活感，温柔干净，保留生活痕迹",
+    form: {
+      ...templateByCategory.lifestyle,
+      rawIdea: "房间或咖啡馆照片变成奶油生活感，温柔干净，保留生活痕迹",
+      edit: "把画面整理得更干净温柔，增加奶油色和暖白生活感，清理明显杂乱但保留真实生活痕迹",
+      targetStyle: "奶油生活感、温柔干净、日系自然、轻微胶片颗粒",
+      lighting: "柔和窗边自然光，轻微暖光，阴影自然不过重",
+      color: "奶油色、暖白、浅木色、低饱和柔和色彩",
+      negativePrompt: "不要变成样板间，不要过度磨平质感，不要新增奇怪家具，不要过度 HDR",
+    },
+  },
+];
+
+export const ideaExamples = [
+  "自拍修自然一点，皮肤干净但保留真实纹理，不要网红脸",
+  "咖啡店照片加白色手账小字，保留原图氛围，底部留白",
+  "旅行街拍调成胶片感，低饱和，有一点随手拍颗粒",
+  "真实手机随拍，加霓虹马克笔涂鸦，密集混乱一点",
+  "房间照片变干净温暖，保留生活痕迹，不要像样板间",
+  "餐桌照片加白色线条注解，小碎念文字，画面不要太满",
+  "去掉背景杂物，补齐干净墙面，主体位置不要改变",
+  "小物照片更可爱，奶油色，柔和自然光，细节清楚",
+];
 
 export const fieldLabels: Record<keyof PromptFormState, string> = {
   rawIdea: "原始想法",

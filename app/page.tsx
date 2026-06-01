@@ -7,9 +7,16 @@ import { IdeaInput } from "@/components/builder/IdeaInput";
 import { PromptForm } from "@/components/builder/PromptForm";
 import { ResultTabs, type OutputTab } from "@/components/builder/ResultTabs";
 import { Toolbar } from "@/components/builder/Toolbar";
+import { TrendTemplates } from "@/components/builder/TrendTemplates";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { BOTTOM_SAFE_AREA, defaultFormState, templateByCategory } from "@/lib/constants";
+import {
+  BOTTOM_SAFE_AREA,
+  defaultFormState,
+  ideaExamples,
+  templateByCategory,
+  trendTemplates,
+} from "@/lib/constants";
 import {
   applyDeepSeekPatch,
   DEEPSEEK_PROXY_URL,
@@ -19,24 +26,6 @@ import { analyzeOffline } from "@/lib/offline-rules";
 import { buildAllOutputs } from "@/lib/prompt-builder";
 import { loadSavedState, saveState } from "@/lib/storage";
 import type { Category, FillMode, PromptFormState } from "@/types/prompt";
-
-const ideaExamples = [
-  "自拍修自然一点，皮肤干净但保留真实纹理，不要网红脸",
-  "咖啡店照片加白色手账小字，保留原图氛围，底部留白",
-  "旅行街拍调成胶片感，低饱和，有一点随手拍颗粒",
-  "真实手机随拍，加霓虹马克笔涂鸦，密集混乱一点",
-];
-
-const quickEffects = [
-  { label: "自然", text: "保持自然真实，不要过度修图" },
-  { label: "清透", text: "整体更清透干净，光线柔和" },
-  { label: "胶片", text: "加入轻微胶片颗粒和低饱和氛围" },
-  { label: "奶油色", text: "偏奶油色、暖白、柔和生活感" },
-  { label: "保留原图", text: "保留原图主体、构图和真实光影" },
-  { label: "底部留白", text: "底部留白方便放标题或排版" },
-  { label: "不要太假", text: "避免塑料感、假 HDR 和过度锐化" },
-  { label: "密集涂鸦", text: "加入霓虹色、密集、夸张的数字马克笔涂鸦覆盖" },
-];
 
 function mergeForm(form: PromptFormState, patch: Partial<PromptFormState>): PromptFormState {
   return { ...form, ...patch, bottomSafeArea: patch.bottomSafeArea || form.bottomSafeArea || BOTTOM_SAFE_AREA };
@@ -53,18 +42,14 @@ function resetWithPatch(form: PromptFormState, patch: Partial<PromptFormState>):
   );
 }
 
-function mergeTemplatePreservingUser(
-  form: PromptFormState,
-  patch: Partial<PromptFormState>,
-): PromptFormState {
-  const next = { ...form };
-  for (const [key, value] of Object.entries(patch) as Array<[keyof PromptFormState, string | undefined]>) {
-    if (!value) continue;
-    if (!next[key] || next[key] === defaultFormState[key]) {
-      next[key] = value;
-    }
-  }
-  return mergeForm(next, {});
+function resetCleanWithPatch(patch: Partial<PromptFormState>): PromptFormState {
+  return mergeForm(
+    {
+      ...defaultFormState,
+      bottomSafeArea: BOTTOM_SAFE_AREA,
+    },
+    patch,
+  );
 }
 
 function exportText(filename: string, text: string) {
@@ -86,21 +71,34 @@ export default function Home() {
   const [hydrated, setHydrated] = React.useState(false);
   const [showAdvanced, setShowAdvanced] = React.useState(false);
   const [isAnalyzingWithDeepSeek, setIsAnalyzingWithDeepSeek] = React.useState(false);
+  const [selectedTrendId, setSelectedTrendId] = React.useState<string | null>(null);
+  const [examplesOpen, setExamplesOpen] = React.useState(false);
+  const [trendsOpen, setTrendsOpen] = React.useState(false);
 
   React.useEffect(() => {
     const saved = loadSavedState();
     if (saved) {
       setForm(mergeForm(defaultFormState, saved.formState));
       setSelectedCategory(saved.selectedCategory);
+      setSelectedTrendId(saved.selectedTrendId ?? null);
+      setExamplesOpen(Boolean(saved.examplesOpen));
+      setTrendsOpen(Boolean(saved.trendsOpen));
     }
     setHydrated(true);
   }, []);
 
   React.useEffect(() => {
     if (!hydrated) return;
-    const ok = saveState({ formState: form, selectedCategory, mode: "offline" });
+    const ok = saveState({
+      formState: form,
+      selectedCategory,
+      selectedTrendId,
+      mode: "offline",
+      examplesOpen,
+      trendsOpen,
+    });
     if (!ok) toast.warning("localStorage 不可用，本次填写内容可能无法自动恢复。");
-  }, [form, selectedCategory, hydrated]);
+  }, [form, selectedCategory, selectedTrendId, examplesOpen, trendsOpen, hydrated]);
 
   const outputs = React.useMemo(() => buildAllOutputs(form), [form]);
   const filledCount = React.useMemo(
@@ -113,8 +111,26 @@ export default function Home() {
   }
 
   function applyCategory(category: Category) {
+    setSelectedTrendId(null);
     setSelectedCategory(category);
-    setForm((current) => mergeTemplatePreservingUser(current, templateByCategory[category]));
+    setForm((current) => resetCleanWithPatch({
+      ...templateByCategory[category],
+      rawIdea: current.rawIdea,
+    }));
+  }
+
+  function applyTrendTemplate(trendId: string) {
+    const trend = trendTemplates.find((item) => item.id === trendId);
+    if (!trend) return;
+
+    setSelectedTrendId(trend.id);
+    setSelectedCategory(trend.category);
+    setForm(resetCleanWithPatch({
+      ...templateByCategory[trend.category],
+      ...trend.form,
+      rawIdea: trend.rawIdea,
+    }));
+    toast.success("已换成这套灵感。");
   }
 
   async function analyze(fillMode: FillMode) {
@@ -125,6 +141,7 @@ export default function Home() {
     }
 
     const { category, ...patch } = analyzeOffline(rawIdea, form, fillMode, selectedCategory);
+    setSelectedTrendId(null);
     setSelectedCategory(category);
     setForm((current) => (
       fillMode === "overwrite"
@@ -154,6 +171,7 @@ export default function Home() {
         fillMode: "overwrite",
         selectedCategory,
       });
+      setSelectedTrendId(null);
       setSelectedCategory(category);
       setForm((current) => applyDeepSeekPatch(current, patch, "overwrite"));
       toast.success("已使用 DeepSeek AI 拆解并填充。");
@@ -206,6 +224,13 @@ export default function Home() {
 
       <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_440px] lg:items-start">
         <div className="min-w-0 space-y-6">
+          <TrendTemplates
+            open={trendsOpen}
+            selectedTrendId={selectedTrendId}
+            onToggle={() => setTrendsOpen((current) => !current)}
+            onSelect={applyTrendTemplate}
+          />
+
           <Card>
             <CardHeader>
               <h2 className="text-2xl font-black tracking-[0.01em] text-[#794f27]">2. 描述一下照片和想法</h2>
@@ -221,14 +246,22 @@ export default function Home() {
                 isAnalyzingWithDeepSeek={isAnalyzingWithDeepSeek}
                 isDeepSeekEnabled={Boolean(DEEPSEEK_PROXY_URL)}
                 examples={ideaExamples}
-                effects={quickEffects}
+                examplesOpen={examplesOpen}
+                onToggleExamples={() => setExamplesOpen((current) => !current)}
                 onClear={() => {
                   setForm({ ...defaultFormState, bottomSafeArea: BOTTOM_SAFE_AREA });
                   setSelectedCategory("general");
+                  setSelectedTrendId(null);
+                  setExamplesOpen(false);
+                  setTrendsOpen(false);
                   toast.success("已清空。");
                 }}
                 onRestoreDefaults={() => {
-                  setForm((current) => mergeForm(current, templateByCategory[selectedCategory]));
+                  setSelectedTrendId(null);
+                  setForm((current) => resetCleanWithPatch({
+                    ...templateByCategory[selectedCategory],
+                    rawIdea: current.rawIdea,
+                  }));
                   toast.success("已恢复当前分类默认值。");
                 }}
               />

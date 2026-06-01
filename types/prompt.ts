@@ -43,5 +43,8 @@ export type PromptFormState = {
 export type SavedBuilderState = {
   formState: PromptFormState;
   selectedCategory: Category;
+  selectedTrendId?: string | null;
   mode: BuilderMode;
+  examplesOpen?: boolean;
+  trendsOpen?: boolean;
 };

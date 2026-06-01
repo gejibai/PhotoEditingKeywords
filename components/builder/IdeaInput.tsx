@@ -12,7 +12,8 @@ export function IdeaInput({
   onClear,
   onRestoreDefaults,
   examples,
-  effects,
+  examplesOpen,
+  onToggleExamples,
 }: {
   value: string;
   onChange: (value: string) => void;
@@ -24,12 +25,9 @@ export function IdeaInput({
   onClear: () => void;
   onRestoreDefaults: () => void;
   examples?: string[];
-  effects?: Array<{ label: string; text: string }>;
+  examplesOpen: boolean;
+  onToggleExamples: () => void;
 }) {
-  function appendText(text: string) {
-    onChange(value.trim() ? `${value.trim()}，${text}` : text);
-  }
-
   return (
     <div className="space-y-4">
       <Textarea
@@ -39,34 +37,34 @@ export function IdeaInput({
         className="min-h-36 text-base"
       />
       {examples?.length ? (
-        <div className="flex flex-wrap gap-2">
-          {examples.map((example) => (
-            <button
-              key={example}
-              type="button"
-              onClick={() => onChange(example)}
-              className="rounded-full border border-[#c4b89e] bg-[#fff9dc] px-3 py-2 text-left text-xs font-bold leading-5 text-[#725d42] transition hover:border-[#19c8b9] hover:bg-white"
-            >
-              {example}
-            </button>
-          ))}
-        </div>
-      ) : null}
-      {effects?.length ? (
-        <div className="space-y-2">
-          <div className="text-xs font-black tracking-[0.08em] text-[#9f927d]">可选效果</div>
-          <div className="flex flex-wrap gap-2">
-            {effects.map((effect) => (
-              <button
-                key={effect.label}
-                type="button"
-                onClick={() => appendText(effect.text)}
-                className="rounded-full border border-[#19c8b9]/60 bg-[#e6f9f6] px-3 py-2 text-xs font-bold text-[#725d42] transition hover:bg-white"
-              >
-                {effect.label}
-              </button>
-            ))}
-          </div>
+        <div className="rounded-[24px] border border-[#dfd0a5] bg-[#fff9dc]/60 p-3">
+          <button
+            type="button"
+            onClick={onToggleExamples}
+            className="flex w-full items-center justify-between gap-4 text-left"
+          >
+            <span>
+              <span className="block text-sm font-black text-[#6f5528]">需要一点灵感？</span>
+              <span className="mt-1 block text-xs font-semibold text-[#9f927d]">看看可直接套用的想法例子</span>
+            </span>
+            <span className="shrink-0 rounded-full border border-[#c4b89e] bg-[#fff8dd] px-3 py-1 text-xs font-black text-[#725d42]">
+              {examplesOpen ? "收起" : "展开"}
+            </span>
+          </button>
+          {examplesOpen ? (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {examples.map((example) => (
+                <button
+                  key={example}
+                  type="button"
+                  onClick={() => onChange(example)}
+                  className="rounded-full border border-[#c4b89e] bg-[#fff9dc] px-3 py-2 text-left text-xs font-bold leading-5 text-[#725d42] transition hover:border-[#19c8b9] hover:bg-white"
+                >
+                  {example}
+                </button>
+              ))}
+            </div>
+          ) : null}
         </div>
       ) : null}
       <div className="flex flex-wrap gap-2">
