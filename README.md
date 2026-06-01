@@ -33,6 +33,8 @@ npm run build
 NEXT_PUBLIC_DEEPSEEK_PROXY_URL=https://your-domain.example.com/deepseek
 ```
 
+GitHub Pages 发布时，把同名仓库变量 `NEXT_PUBLIC_DEEPSEEK_PROXY_URL` 配到 GitHub `Settings -> Secrets and variables -> Actions -> Variables`。
+
 代理接口接收前端传来的 `rawIdea/currentForm/categories/fields`，返回：
 
 ```json

@@ -33,6 +33,7 @@ jobs:
         run: npm run build
         env:
           GITHUB_PAGES: "true"
+          NEXT_PUBLIC_DEEPSEEK_PROXY_URL: ${{ vars.NEXT_PUBLIC_DEEPSEEK_PROXY_URL }}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
