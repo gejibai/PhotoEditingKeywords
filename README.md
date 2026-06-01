@@ -27,7 +27,7 @@ npm run build
 
 ## DeepSeek 接入
 
-前端是静态站点，不能直接保存 `DEEPSEEK_API_KEY`。页面里的「生成修图提示词」会调用 DeepSeek 代理进行思考和字段拆解；请先部署一个后端代理或云函数，然后在构建时配置：
+前端是静态站点，不能直接保存 `DEEPSEEK_API_KEY`。页面里的「让 AI 润色一下」会调用 DeepSeek 代理进行思考和字段拆解；请先部署一个后端代理或云函数，然后在构建时配置：
 
 ```bash
 NEXT_PUBLIC_DEEPSEEK_PROXY_URL=https://your-domain.example.com/deepseek
