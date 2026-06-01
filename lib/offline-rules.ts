@@ -3,6 +3,10 @@ import type { Category, FillMode, PromptFormState } from "@/types/prompt";
 
 const rules: Array<{ category: Category; words: string[] }> = [
   {
+    category: "meme",
+    words: ["表情包", "梗图", "斗图", "聊天表情", "吐槽图", "吐槽", "阴阳怪气", "无语", "破防", "崩溃", "笑死", "发疯"],
+  },
+  {
     category: "doodle_snap",
     words: ["马克笔", "数字马克笔", "霓虹", "混乱涂鸦", "密集涂鸦", "涂鸦覆盖", "快照", "手持手机", "学生日记", "杂志标记", "故事批注"],
   },
@@ -58,6 +62,7 @@ function detectPhotoType(rawIdea: string, category: Category) {
   if (hasAny(text, ["猫", "狗", "宠物"])) return "宠物照片";
   if (hasAny(text, ["杯子", "书", "花", "植物", "玩偶", "小物", "静物"])) return "物件静物";
   if (hasAny(text, ["餐桌", "咖啡", "甜品", "饮料", "饭", "食物"])) return "餐桌/咖啡/甜品";
+  if (hasAny(text, ["表情包", "梗图", "斗图", "聊天表情", "吐槽图"])) return "表情包 / 梗图素材";
   if (hasAny(text, ["快照", "手持手机", "马克笔", "霓虹", "涂鸦覆盖"])) return "真实手持手机随拍快照";
   if (hasAny(text, ["旅行", "街拍", "街道", "城市", "路牌"])) return "旅行街拍";
   if (hasAny(text, ["海边", "山", "天空", "风景", "公园", "草地"])) return "风景照片";
@@ -76,6 +81,7 @@ function ideaEnhancements(rawIdea: string) {
       hasAny(text, ["手绘", "手账", "注解", "涂鸦", "doodle"]) ? "手绘风注解、日系可爱手账、白色线稿、一笔画风格" : undefined,
       hasAny(text, ["高级", "干净"]) ? "干净高级、简洁留白" : undefined,
       hasAny(text, ["电影", "电影感"]) ? "电影感、柔和对比" : undefined,
+      hasAny(text, ["表情包", "梗图", "斗图", "吐槽"]) ? "聊天表情包、社交媒体梗图、干净好笑" : undefined,
     ]),
     mood: uniqueJoin([
       hasAny(text, ["温暖", "暖"]) ? "温暖" : undefined,
@@ -84,6 +90,7 @@ function ideaEnhancements(rawIdea: string) {
       hasAny(text, ["安静", "治愈"]) ? "安静、治愈" : undefined,
       hasAny(text, ["夏日", "海边"]) ? "夏日、清爽" : undefined,
       hasAny(text, ["怀旧", "复古", "ccd", "胶片"]) ? "怀旧、随手记录感" : undefined,
+      hasAny(text, ["无语", "震惊", "敷衍", "崩溃", "阴阳怪气", "破防", "笑死", "发疯"]) ? "情绪明确、反应感强、适合聊天表达" : undefined,
     ]),
     lighting: uniqueJoin([
       hasAny(text, ["窗光", "窗边"]) ? "柔和窗边散射光" : undefined,
@@ -107,6 +114,7 @@ function ideaEnhancements(rawIdea: string) {
       hasAny(text, ["方图", "1:1"]) ? "适配 1:1 方图，主体清晰，边缘留白" : undefined,
       hasAny(text, ["突出主体", "主体更突出"]) ? "主体更突出，背景简洁不抢戏" : undefined,
       hasAny(text, ["手绘", "注解", "箭头"]) ? "注解围绕物件分布，保留空白，不遮挡主体和人物脸部" : undefined,
+      hasAny(text, ["表情包", "梗图", "斗图", "文字区"]) ? "1:1 方图，主体居中或略偏上，底部或空白处保留大字文字区" : undefined,
     ]),
   };
 }

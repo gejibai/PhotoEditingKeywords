@@ -7,6 +7,7 @@ export type Category =
   | "pet_object"
   | "cleanup"
   | "doodle_snap"
+  | "meme"
   | "general";
 
 export type FillMode = "overwrite" | "fill-empty";
