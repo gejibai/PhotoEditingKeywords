@@ -10,6 +10,11 @@ import { Toolbar } from "@/components/builder/Toolbar";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { BOTTOM_SAFE_AREA, defaultFormState, templateByCategory } from "@/lib/constants";
+import {
+  applyDeepSeekPatch,
+  DEEPSEEK_PROXY_URL,
+  requestDeepSeekAnalysis,
+} from "@/lib/deepseek-client";
 import { analyzeOffline } from "@/lib/offline-rules";
 import { buildAllOutputs } from "@/lib/prompt-builder";
 import { loadSavedState, saveState } from "@/lib/storage";
@@ -80,6 +85,7 @@ export default function Home() {
   const [activeTab, setActiveTab] = React.useState<OutputTab>("full");
   const [hydrated, setHydrated] = React.useState(false);
   const [showAdvanced, setShowAdvanced] = React.useState(false);
+  const [isAnalyzingWithDeepSeek, setIsAnalyzingWithDeepSeek] = React.useState(false);
 
   React.useEffect(() => {
     const saved = loadSavedState();
@@ -126,6 +132,37 @@ export default function Home() {
         : mergeForm(current, patch)
     ));
     toast.success(fillMode === "overwrite" ? "已根据原始想法覆盖填充。" : "已根据原始想法补齐空项。");
+  }
+
+  async function analyzeWithDeepSeek() {
+    const rawIdea = form.rawIdea.trim();
+    if (!rawIdea) {
+      toast.error("先写一句原始想法。");
+      return;
+    }
+
+    if (!DEEPSEEK_PROXY_URL) {
+      toast.error("还没有配置 DeepSeek 代理地址。");
+      return;
+    }
+
+    setIsAnalyzingWithDeepSeek(true);
+    try {
+      const { category, patch } = await requestDeepSeekAnalysis({
+        rawIdea,
+        currentForm: form,
+        fillMode: "overwrite",
+        selectedCategory,
+      });
+      setSelectedCategory(category);
+      setForm((current) => applyDeepSeekPatch(current, patch, "overwrite"));
+      toast.success("已使用 DeepSeek AI 拆解并填充。");
+    } catch (error) {
+      console.error(error);
+      toast.error(error instanceof Error ? error.message : "DeepSeek AI 拆解失败。");
+    } finally {
+      setIsAnalyzingWithDeepSeek(false);
+    }
   }
 
   async function copyText(text: string) {
@@ -180,6 +217,9 @@ export default function Home() {
                 onChange={(value) => updateField("rawIdea", value)}
                 onAnalyzeOverwrite={() => analyze("overwrite")}
                 onAnalyzeFillEmpty={() => analyze("fill-empty")}
+                onAnalyzeWithDeepSeek={analyzeWithDeepSeek}
+                isAnalyzingWithDeepSeek={isAnalyzingWithDeepSeek}
+                isDeepSeekEnabled={Boolean(DEEPSEEK_PROXY_URL)}
                 examples={ideaExamples}
                 effects={quickEffects}
                 onClear={() => {

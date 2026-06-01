@@ -6,6 +6,9 @@ export function IdeaInput({
   onChange,
   onAnalyzeOverwrite,
   onAnalyzeFillEmpty,
+  onAnalyzeWithDeepSeek,
+  isAnalyzingWithDeepSeek,
+  isDeepSeekEnabled,
   onClear,
   onRestoreDefaults,
   examples,
@@ -15,6 +18,9 @@ export function IdeaInput({
   onChange: (value: string) => void;
   onAnalyzeOverwrite: () => void;
   onAnalyzeFillEmpty: () => void;
+  onAnalyzeWithDeepSeek: () => void;
+  isAnalyzingWithDeepSeek: boolean;
+  isDeepSeekEnabled: boolean;
   onClear: () => void;
   onRestoreDefaults: () => void;
   examples?: string[];
@@ -65,6 +71,14 @@ export function IdeaInput({
       ) : null}
       <div className="flex flex-wrap gap-2">
         <Button size="lg" onClick={onAnalyzeOverwrite}>生成修图提示词</Button>
+        <Button
+          variant="outline"
+          onClick={onAnalyzeWithDeepSeek}
+          disabled={isAnalyzingWithDeepSeek}
+          title={isDeepSeekEnabled ? undefined : "配置 NEXT_PUBLIC_DEEPSEEK_PROXY_URL 后启用"}
+        >
+          {isAnalyzingWithDeepSeek ? "DeepSeek 拆解中..." : "DeepSeek AI 拆解"}
+        </Button>
         <Button variant="outline" onClick={onAnalyzeFillEmpty}>
           帮我补缺少的
         </Button>
