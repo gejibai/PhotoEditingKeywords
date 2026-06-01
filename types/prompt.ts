@@ -43,6 +43,7 @@ export type PromptFormState = {
 export type SavedBuilderState = {
   formState: PromptFormState;
   selectedCategory: Category;
+  activeTab?: "compact" | "full" | "layered" | "json";
   selectedTrendId?: string | null;
   mode: BuilderMode;
   examplesOpen?: boolean;

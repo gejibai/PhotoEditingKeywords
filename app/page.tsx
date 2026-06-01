@@ -52,22 +52,10 @@ function resetCleanWithPatch(patch: Partial<PromptFormState>): PromptFormState {
   );
 }
 
-function exportText(filename: string, text: string) {
-  const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const anchor = document.createElement("a");
-  anchor.href = url;
-  anchor.download = filename;
-  document.body.appendChild(anchor);
-  anchor.click();
-  anchor.remove();
-  URL.revokeObjectURL(url);
-}
-
 export default function Home() {
   const [form, setForm] = React.useState<PromptFormState>(defaultFormState);
   const [selectedCategory, setSelectedCategory] = React.useState<Category>("general");
-  const [activeTab, setActiveTab] = React.useState<OutputTab>("full");
+  const [activeTab, setActiveTab] = React.useState<OutputTab>("compact");
   const [hydrated, setHydrated] = React.useState(false);
   const [showAdvanced, setShowAdvanced] = React.useState(false);
   const [isAnalyzingWithDeepSeek, setIsAnalyzingWithDeepSeek] = React.useState(false);
@@ -80,6 +68,7 @@ export default function Home() {
     if (saved) {
       setForm(mergeForm(defaultFormState, saved.formState));
       setSelectedCategory(saved.selectedCategory);
+      setActiveTab(saved.activeTab === "full" ? "full" : "compact");
       setSelectedTrendId(saved.selectedTrendId ?? null);
       setExamplesOpen(Boolean(saved.examplesOpen));
       setTrendsOpen(Boolean(saved.trendsOpen));
@@ -92,13 +81,14 @@ export default function Home() {
     const ok = saveState({
       formState: form,
       selectedCategory,
+      activeTab,
       selectedTrendId,
       mode: "offline",
       examplesOpen,
       trendsOpen,
     });
     if (!ok) toast.warning("localStorage 不可用，本次填写内容可能无法自动恢复。");
-  }, [form, selectedCategory, selectedTrendId, examplesOpen, trendsOpen, hydrated]);
+  }, [form, selectedCategory, activeTab, selectedTrendId, examplesOpen, trendsOpen, hydrated]);
 
   const outputs = React.useMemo(() => buildAllOutputs(form), [form]);
   const filledCount = React.useMemo(
@@ -191,8 +181,6 @@ export default function Home() {
       toast.error("复制失败，请手动选择文本复制。");
     }
   }
-
-  const allText = `【完整提示词】\n${outputs.full}\n\n【分层关键词】\n${outputs.layered}\n\n【一句话压缩版】\n${outputs.compact}\n\n【JSON 结构化提示词】\n${outputs.json}`;
 
   return (
     <main className="mx-auto w-full max-w-7xl px-4 py-6 pb-[132px] md:px-6 md:py-10 md:pb-[150px]">
@@ -298,15 +286,6 @@ export default function Home() {
                 activeTab={activeTab}
                 onTabChange={setActiveTab}
                 onCopyCurrent={() => copyText(outputs[activeTab])}
-                onCopyAll={() => copyText(allText)}
-                onExport={() => {
-                  try {
-                    exportText("日常修图关键词.txt", allText);
-                    toast.success("已导出 TXT。");
-                  } catch {
-                    toast.error("导出失败。");
-                  }
-                }}
               />
             </CardContent>
           </Card>
