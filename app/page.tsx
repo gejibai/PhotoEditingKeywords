@@ -215,10 +215,9 @@ export default function Home() {
               <IdeaInput
                 value={form.rawIdea}
                 onChange={(value) => updateField("rawIdea", value)}
-                onAnalyzeOverwrite={() => analyze("overwrite")}
+                onAnalyzeOverwrite={analyzeWithDeepSeek}
                 onAnalyzeFillEmpty={() => analyze("fill-empty")}
-                onAnalyzeWithDeepSeek={analyzeWithDeepSeek}
-                isAnalyzingWithDeepSeek={isAnalyzingWithDeepSeek}
+                isGenerating={isAnalyzingWithDeepSeek}
                 isDeepSeekEnabled={Boolean(DEEPSEEK_PROXY_URL)}
                 examples={ideaExamples}
                 effects={quickEffects}

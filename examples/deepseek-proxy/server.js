@@ -80,7 +80,7 @@ const server = http.createServer(async (req, res) => {
         Authorization: `Bearer ${deepseekApiKey}`,
       },
       body: JSON.stringify({
-        model: process.env.DEEPSEEK_MODEL || "deepseek-v4-flash",
+        model: process.env.DEEPSEEK_MODEL || "deepseek-v4-pro",
         messages: [
           {
             role: "system",
@@ -92,7 +92,8 @@ const server = http.createServer(async (req, res) => {
           },
         ],
         response_format: { type: "json_object" },
-        thinking: { type: "disabled" },
+        thinking: { type: "enabled" },
+        reasoning_effort: process.env.DEEPSEEK_REASONING_EFFORT || "high",
         stream: false,
       }),
     });
