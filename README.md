@@ -5,7 +5,6 @@
 ## 当前方向
 
 - 默认使用浏览器端离线规则。
-- 可选接入 DeepSeek 安全代理，由服务端保存 API Key。
 - 不上传图片，不处理真实图片，也不生成图片。
 - 支持字段自动补全、结果复制、TXT 导出和 localStorage 恢复。
 - 默认是轻量直观的三步流程：选方向、写想法、复制结果；详细字段收进高级设置。
@@ -24,37 +23,6 @@ npm run dev
 
 ```bash
 npm run build
-```
-
-## DeepSeek 接入
-
-前端是静态站点，不能直接保存 `DEEPSEEK_API_KEY`。页面里的「让 AI 润色一下」会调用 DeepSeek 代理进行思考和字段拆解；请先部署一个后端代理或云函数，然后在构建时配置：
-
-```bash
-NEXT_PUBLIC_DEEPSEEK_PROXY_URL=https://your-domain.example.com/deepseek
-```
-
-GitHub Pages 发布时，把同名仓库变量 `NEXT_PUBLIC_DEEPSEEK_PROXY_URL` 配到 GitHub `Settings -> Secrets and variables -> Actions -> Variables`。
-
-代理接口接收前端传来的 `rawIdea/currentForm/categories/fields`，返回：
-
-```json
-{
-  "category": "note",
-  "patch": {
-    "photoType": "餐桌/咖啡/甜品照片",
-    "edit": "..."
-  }
-}
-```
-
-示例代理在 `examples/deepseek-proxy/server.js`，需要设置：
-
-```bash
-DEEPSEEK_API_KEY=你的 DeepSeek Key
-DEEPSEEK_MODEL=deepseek-v4-pro
-DEEPSEEK_REASONING_EFFORT=high
-ALLOW_ORIGIN=https://gejibai.github.io
 ```
 
 ## GitHub Pages

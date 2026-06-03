@@ -17,11 +17,6 @@ import {
   templateByCategory,
   trendTemplates,
 } from "@/lib/constants";
-import {
-  applyDeepSeekPatch,
-  DEEPSEEK_PROXY_URL,
-  requestDeepSeekAnalysis,
-} from "@/lib/deepseek-client";
 import { analyzeOffline } from "@/lib/offline-rules";
 import { buildAllOutputs } from "@/lib/prompt-builder";
 import { loadSavedState, saveState } from "@/lib/storage";
@@ -58,7 +53,6 @@ export default function Home() {
   const [activeTab, setActiveTab] = React.useState<OutputTab>("compact");
   const [hydrated, setHydrated] = React.useState(false);
   const [showAdvanced, setShowAdvanced] = React.useState(false);
-  const [isAnalyzingWithDeepSeek, setIsAnalyzingWithDeepSeek] = React.useState(false);
   const [selectedTrendId, setSelectedTrendId] = React.useState<string | null>(null);
   const [examplesOpen, setExamplesOpen] = React.useState(false);
   const [trendsOpen, setTrendsOpen] = React.useState(false);
@@ -141,38 +135,6 @@ export default function Home() {
     toast.success(fillMode === "overwrite" ? "已根据原始想法覆盖填充。" : "已根据原始想法补齐空项。");
   }
 
-  async function analyzeWithDeepSeek() {
-    const rawIdea = form.rawIdea.trim();
-    if (!rawIdea) {
-      toast.error("先写一句原始想法。");
-      return;
-    }
-
-    if (!DEEPSEEK_PROXY_URL) {
-      toast.error("还没有配置润色服务地址。");
-      return;
-    }
-
-    setIsAnalyzingWithDeepSeek(true);
-    try {
-      const { category, patch } = await requestDeepSeekAnalysis({
-        rawIdea,
-        currentForm: form,
-        fillMode: "overwrite",
-        selectedCategory,
-      });
-      setSelectedTrendId(null);
-      setSelectedCategory(category);
-      setForm((current) => applyDeepSeekPatch(current, patch, "overwrite"));
-      toast.success("已润色并填充。");
-    } catch (error) {
-      console.error(error);
-      toast.error(error instanceof Error ? error.message : "润色失败。");
-    } finally {
-      setIsAnalyzingWithDeepSeek(false);
-    }
-  }
-
   async function copyText(text: string) {
     try {
       await navigator.clipboard.writeText(text);
@@ -196,7 +158,7 @@ export default function Home() {
               把“想变好看一点”翻译成清楚的修图提示词，顺手整理风格、光线、色彩、留白和避坑要求。
             </p>
             <p className="mt-3 max-w-2xl rounded-[22px] border border-[#dfd0a5] bg-[#fff9dc]/80 px-4 py-3 text-sm font-bold leading-6 text-[#725d42]">
-              想法写得很随意也没关系，下面写完后点「帮我润色一下」，可以把内容整理得更顺、更完整。
+              想法写得很随意也没关系，下面写完后点「生成修图提示词」，可以把内容整理成清楚可复制的版本。
             </p>
           </div>
         </div>
@@ -242,9 +204,6 @@ export default function Home() {
                 onChange={(value) => updateField("rawIdea", value)}
                 onAnalyzeOverwrite={() => analyze("overwrite")}
                 onAnalyzeFillEmpty={() => analyze("fill-empty")}
-                onAnalyzeWithDeepSeek={analyzeWithDeepSeek}
-                isAnalyzingWithDeepSeek={isAnalyzingWithDeepSeek}
-                isDeepSeekEnabled={Boolean(DEEPSEEK_PROXY_URL)}
                 examples={ideaExamples}
                 examplesOpen={examplesOpen}
                 onToggleExamples={() => setExamplesOpen((current) => !current)}
