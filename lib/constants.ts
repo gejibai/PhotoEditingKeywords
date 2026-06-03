@@ -73,6 +73,12 @@ export const categories: Array<{
     accent: "bg-sky-50 text-sky-700",
   },
   {
+    id: "meme",
+    name: "表情包留白",
+    description: "1:1 梗图构图，底部留文字区",
+    accent: "bg-lime-50 text-lime-700",
+  },
+  {
     id: "general",
     name: "我也说不清",
     description: "先帮我变自然、干净、好看",
@@ -200,12 +206,12 @@ export const templateByCategory: Record<Category, Partial<PromptFormState>> = {
     photoType: "表情包 / 梗图素材",
     usageScene: "聊天表情、朋友圈吐槽图、社交平台梗图",
     keep: "保留主体表情、动作、身份特征和最有梗的瞬间；不要改变人物、宠物或物件的核心特征",
-    edit: "整理成适合聊天发送的 1:1 表情包构图，主体居中或略偏上，底部或画面空白处预留大字文案区；具体梗、情绪和文字内容由用户自己填写",
+    edit: "整理成适合聊天发送的 1:1 表情包构图，主体居中或略偏上，底部或画面空白处预留大字文案区",
     subject: "照片里的主要人物、宠物或物件",
     scene: "保留原始场景的关键信息，背景可以适度简化",
     actionRelation: "突出最有反应感的表情、动作或互动瞬间",
     targetStyle: "干净好笑、轻量夸张、聊天表情包、社交媒体梗图",
-    mood: "由用户填写的情绪为主，可以是无语、震惊、敷衍、开心、崩溃、阴阳怪气",
+    mood: "根据用户填写的梗来决定情绪，可以是无语、震惊、敷衍、开心、崩溃、阴阳怪气",
     composition: "1:1 方图，主体不要被文字遮挡，文字区清楚，适合手机聊天里一眼看懂",
     aspectRatio: "1:1",
     lighting: "保持照片原本光线，适度提亮主体，让表情和动作更清楚",
@@ -214,11 +220,11 @@ export const templateByCategory: Record<Category, Partial<PromptFormState>> = {
     quality: "适合聊天窗口预览的小图清晰度，主体表情一眼可辨认",
     retouchStrength: "中等修图",
     annotationObjects: "主体表情、动作、手势、道具和空白文字区",
-    annotationTextStyle: "粗体大字、短句、清晰可读；具体文案由用户填写，不要替用户乱编梗",
+    annotationTextStyle: "粗体大字、短句、清晰可读，适合聊天窗口里一眼看懂",
     lineStyle: "可用少量描边、高亮线、箭头或气泡强调表情和动作",
-    decorations: "少量贴纸、气泡、箭头、感叹号、描边、高亮线，用户可自行添加；不要铺满画面",
+    decorations: "少量贴纸、气泡、箭头、感叹号、描边、高亮线，不要铺满画面",
     blankSpaceRule: "底部或画面空白处保留文字区，文字不要遮挡脸、表情和关键动作",
-    negativePrompt: "不要生成乱码文字，不要过度贴纸，不要遮挡脸和关键动作，不要把表情改得太离谱，不要替用户生成冒犯性文字",
+    negativePrompt: "不要生成乱码文字，不要过度贴纸，不要遮挡脸和关键动作，不要把表情改得太离谱",
   },
   general: {
     photoType: "日常照片",
@@ -245,23 +251,6 @@ export type TrendTemplate = {
 };
 
 export const trendTemplates: TrendTemplate[] = [
-  {
-    id: "meme",
-    category: "meme",
-    name: "表情包留白版",
-    tag: "1:1 梗图",
-    description: "做成聊天表情包构图，底部留文字区；梗和文案建议你自己填。",
-    rawIdea: "把照片做成 1:1 表情包，保留主体表情，底部留出文字区；我会自己填写想表达的梗和文案，可以加少量贴纸和强调符号",
-    form: {
-      ...templateByCategory.meme,
-      rawIdea: "把照片做成 1:1 表情包，保留主体表情，底部留出文字区；我会自己填写想表达的梗和文案，可以加少量贴纸和强调符号",
-      edit: "整理成 1:1 表情包构图，主体居中或略偏上，底部或空白处预留大字文案区；提醒用户自己填写想表达的梗、情绪或吐槽，不要替用户乱编完整文案",
-      mood: "根据用户填写的梗来决定情绪，可以是无语、震惊、敷衍、开心、崩溃、阴阳怪气",
-      annotationTextStyle: "粗体大字、短句、清晰可读；文字内容由用户填写，适合聊天窗口里一眼看懂",
-      decorations: "少量贴纸、气泡、箭头、感叹号、描边、高亮线，用户可自行添加",
-      blankSpaceRule: "底部或画面空白处保留一块清楚文字区，文字不要遮挡脸和关键动作",
-    },
-  },
   {
     id: "note",
     category: "note",

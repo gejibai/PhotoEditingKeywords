@@ -10,7 +10,7 @@ export function CategoryCards({
   onSelect: (category: Category) => void;
 }) {
   return (
-    <div className="flex gap-4 overflow-x-auto pb-3 md:grid md:grid-cols-3 md:overflow-visible xl:grid-cols-7">
+    <div className="flex gap-4 overflow-x-auto pb-3 md:grid md:grid-cols-4 md:overflow-visible xl:grid-cols-8">
       {categories.map((category) => (
         <button
           key={category.id}

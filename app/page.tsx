@@ -196,7 +196,6 @@ export default function Home() {
               把“想变好看一点”翻译成清楚的修图提示词，顺手整理风格、光线、色彩、留白和避坑要求。
             </p>
           </div>
-          <Badge className="bg-[#fff9dc] text-[#725d42]">静态离线版</Badge>
         </div>
       </header>
 
@@ -204,7 +203,9 @@ export default function Home() {
         <div className="mb-3 flex items-end justify-between gap-4">
           <div>
             <h2 className="text-2xl font-black tracking-[0.01em] text-[#794f27]">1. 选你想要的感觉</h2>
-            <p className="mt-1 text-sm font-semibold text-[#9f927d]">先点最接近的方向，后面可以继续微调。</p>
+            <p className="mt-1 text-sm font-semibold text-[#9f927d]">
+              先点最接近的方向，建议再到高级设置里调整自己想要的内容，出图效果会更好。
+            </p>
           </div>
         </div>
         <CategoryCards selectedCategory={selectedCategory} onSelect={applyCategory} />
@@ -267,7 +268,7 @@ export default function Home() {
             <div className="mt-5">
               <PromptForm
                 form={form}
-                showNoteFields={selectedCategory === "note" || selectedCategory === "doodle_snap"}
+                showNoteFields={selectedCategory === "note" || selectedCategory === "doodle_snap" || selectedCategory === "meme"}
                 onChange={updateField}
               />
             </div>
