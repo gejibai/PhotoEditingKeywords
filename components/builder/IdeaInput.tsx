@@ -73,9 +73,9 @@ export function IdeaInput({
           variant="outline"
           onClick={onAnalyzeWithDeepSeek}
           disabled={isAnalyzingWithDeepSeek}
-          title={isDeepSeekEnabled ? undefined : "配置 NEXT_PUBLIC_DEEPSEEK_PROXY_URL 后启用"}
+          title={isDeepSeekEnabled ? undefined : "配置润色服务地址后启用"}
         >
-          {isAnalyzingWithDeepSeek ? "AI 润色中..." : "让 AI 润色一下"}
+          {isAnalyzingWithDeepSeek ? "正在润色..." : "帮我润色一下"}
         </Button>
         <Button variant="outline" onClick={onAnalyzeFillEmpty}>
           帮我补缺少的

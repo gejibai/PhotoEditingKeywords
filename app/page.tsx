@@ -149,7 +149,7 @@ export default function Home() {
     }
 
     if (!DEEPSEEK_PROXY_URL) {
-      toast.error("还没有配置 DeepSeek 代理地址。");
+      toast.error("还没有配置润色服务地址。");
       return;
     }
 
@@ -164,10 +164,10 @@ export default function Home() {
       setSelectedTrendId(null);
       setSelectedCategory(category);
       setForm((current) => applyDeepSeekPatch(current, patch, "overwrite"));
-      toast.success("已使用 DeepSeek AI 拆解并填充。");
+      toast.success("已润色并填充。");
     } catch (error) {
       console.error(error);
-      toast.error(error instanceof Error ? error.message : "DeepSeek AI 拆解失败。");
+      toast.error(error instanceof Error ? error.message : "润色失败。");
     } finally {
       setIsAnalyzingWithDeepSeek(false);
     }
@@ -194,6 +194,9 @@ export default function Home() {
             </h1>
             <p className="mt-4 max-w-2xl text-base font-semibold leading-8 text-[#725d42] md:text-lg">
               把“想变好看一点”翻译成清楚的修图提示词，顺手整理风格、光线、色彩、留白和避坑要求。
+            </p>
+            <p className="mt-3 max-w-2xl rounded-[22px] border border-[#dfd0a5] bg-[#fff9dc]/80 px-4 py-3 text-sm font-bold leading-6 text-[#725d42]">
+              想法写得很随意也没关系，下面写完后点「帮我润色一下」，可以把内容整理得更顺、更完整。
             </p>
           </div>
         </div>

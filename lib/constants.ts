@@ -235,7 +235,7 @@ export const templateByCategory: Record<Category, Partial<PromptFormState>> = {
     lighting: "柔和自然光，画面通透不过曝",
     color: "干净明亮、低饱和、肤色和环境色自然",
     composition: "主体突出，适当留白，保持原始空间关系",
-    quality: "高清自然，细节清楚，少一点 AI 味",
+    quality: "高清自然，细节清楚，少一点机器感",
     negativePrompt: "不要过度滤镜，不要文字乱码，不要装饰过满，不要改变真实主体",
   },
 };

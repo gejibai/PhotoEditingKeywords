@@ -66,7 +66,7 @@ export async function requestDeepSeekAnalysis({
   selectedCategory: Category;
 }): Promise<{ category: Category; patch: Partial<PromptFormState> }> {
   if (!DEEPSEEK_PROXY_URL) {
-    throw new Error("未配置 DeepSeek 代理地址。");
+    throw new Error("未配置润色服务地址。");
   }
 
   const response = await fetch(DEEPSEEK_PROXY_URL, {
@@ -85,7 +85,7 @@ export async function requestDeepSeekAnalysis({
   });
 
   if (!response.ok) {
-    throw new Error(`DeepSeek 代理请求失败：${response.status}`);
+    throw new Error(`润色服务请求失败：${response.status}`);
   }
 
   const data = (await response.json()) as DeepSeekProxyResponse;
