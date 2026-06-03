@@ -209,6 +209,14 @@ export default function Home() {
           </div>
         </div>
         <CategoryCards selectedCategory={selectedCategory} onSelect={applyCategory} />
+        {selectedCategory === "meme" ? (
+          <div className="mt-4 rounded-[24px] border-2 border-[#11a89b]/50 bg-[#e6f9f6] px-5 py-4 shadow-[0_4px_10px_rgba(107,92,67,0.14)]">
+            <strong className="block text-base font-black text-[#0b8f84]">表情包想更像你脑子里的梗？</strong>
+            <p className="mt-1 text-sm font-bold leading-6 text-[#725d42]">
+              建议打开高级设置，调整你想要的情绪、文字区位置、贴纸和强调符号；这些细节填得越准，生成的提示词越贴近想要的效果。
+            </p>
+          </div>
+        ) : null}
       </section>
 
       <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_440px] lg:items-start">
