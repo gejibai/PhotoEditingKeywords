@@ -74,8 +74,8 @@ export const categories: Array<{
   },
   {
     id: "meme",
-    name: "表情包留白",
-    description: "1:1 梗图构图，底部留文字区",
+    name: "表情包编辑",
+    description: "做聊天梗图，保留文字区和表情",
     accent: "bg-lime-50 text-lime-700",
   },
   {
